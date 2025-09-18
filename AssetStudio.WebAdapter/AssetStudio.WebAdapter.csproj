@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <!-- Explicitly set as a library to prevent CS5001 error -->
+    <OutputType>Library</OutputType>
+    <!-- WASM specific settings -->
+    <PublishTrimmed>true</PublishTrimmed>
+    <TrimMode>partial</TrimMode>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AssetStudio\AssetStudio\AssetStudio.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Text.Json" Version="9.0.0-preview.6.24327.7" />
+  </ItemGroup>
+  
+</Project>
