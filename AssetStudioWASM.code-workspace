@@ -1,0 +1,111 @@
+{
+    "folders": [
+        {
+            "path": "."
+        }
+    ],
+    "settings": {
+        "dotnet.defaultSolution": "AssetStudioWASM.sln"
+    },
+    "tasks": {
+        "version": "2.0.0",
+        "tasks": [
+            {
+                "label": "Build WASM - Publish",
+                "type": "shell",
+                "hide": true,
+                "command": "dotnet",
+                "args": [
+                    "publish",
+                    "-c",
+                    "${input:buildConfig}"
+                ],
+                "group": "build",
+                "problemMatcher": ["$msCompile"],
+                "presentation": {
+                    "reveal": "always",
+                    "panel": "shared"
+                },
+                "options": {
+                    "cwd": "${workspaceFolder}/AssetStudio.WebAdapter"
+                }
+            },
+            {
+                "label": "Build WASM - Publish & Copy to dist",
+                "type": "shell",
+                "windows": {
+                    "command": "xcopy",
+                    "args": [
+                        "${workspaceFolder}\\AssetStudio.WebAdapter\\bin\\${input:buildConfig}\\net8.0\\browser-wasm\\AppBundle",
+                        "${workspaceFolder}\\dist\\AppBundle",
+                        "/E",
+                        "/I",
+                        "/Y"
+                    ]
+                },
+                "linux": {
+                    "command": "cp",
+                    "args": [
+                        "-r",
+                        "${workspaceFolder}/AssetStudio.WebAdapter/bin/${input:buildConfig}/net8.0/browser-wasm/AppBundle",
+                        "${workspaceFolder}/dist/AppBundle"
+                    ]
+                },
+                "osx": {
+                    "command": "cp",
+                    "args": [
+                        "-r",
+                        "${workspaceFolder}/AssetStudio.WebAdapter/bin/${input:buildConfig}/net8.0/browser-wasm/AppBundle",
+                        "${workspaceFolder}/dist/AppBundle"
+                    ]
+                },
+                "group": "build",
+                "problemMatcher": [],
+                "presentation": {
+                    "reveal": "always",
+                    "panel": "shared"
+                },
+                "options": {
+                    "cwd": "${workspaceFolder}"
+                },
+                "dependsOn": "Build WASM - Publish"
+            }
+        ],
+        "inputs": [
+            {
+                "id": "buildConfig",
+                "type": "pickString",
+                "description": "Select build configuration",
+                "options": ["Debug", "Release"],
+                "default": "Release"
+            }
+        ]
+    },
+    "launch": {
+        "version": "0.2.0",
+        "configurations": [
+            {
+                "name": "Build WASM",
+                "type": "coreclr",
+                "request": "launch",
+                "preLaunchTask": "Build WASM - Publish & Copy to dist",
+                "cwd": "${workspaceFolder}",
+                "program": "dotnet",
+                "internalConsoleOptions": "neverOpen"
+            },
+            {
+                "name": "Build & Test WASM",
+                "type": "coreclr",
+                "request": "launch",
+                "preLaunchTask": "Build WASM - Publish & Copy to dist",
+                "cwd": "${workspaceFolder}",
+                "program": "dotnet",
+                "args": [
+                    "serve",
+                    "--directory",
+                    "test"
+                ]
+            }
+        ]
+    }
+}
