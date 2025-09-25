@@ -105,6 +105,18 @@
                     "--directory",
                     "test"
                 ]
+            },
+            {
+                "name": "Test WASM (No Rebuild)",
+                "type": "coreclr",
+                "request": "launch",
+                "cwd": "${workspaceFolder}",
+                "program": "dotnet",
+                "args": [
+                    "serve",
+                    "--directory",
+                    "test"
+                ]
             }
         ]
     }
