@@ -13,4 +13,6 @@ const AssetStudioWASM = await init();
 window.AssetStudioWASM = AssetStudioWASM;
 
 export {AssetStudioWASM};
-    // Test call, e.g., console.log(AssetStudioWASM.JsApi.OpenFile(new Uint8Array([]), "test"));
+// Test call, e.g., console.log(AssetStudioWASM.JsApi.OpenFile(new Uint8Array([]), "test"));
+
+window.dispatchEvent(new Event("AssetStudioWASM.loaded"));

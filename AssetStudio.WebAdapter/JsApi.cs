@@ -10,14 +10,32 @@ using System.Security.Cryptography;
 // This class acts as the main entry point for our web API.
 // It contains methods that can be called directly from JavaScript (via JSExport).
 public static partial class JsApi
-{
-    // This is a simple data structure to represent the processed asset info.
-    public class AssetInfo
+{    
+    // Helper method to create success JSON using JsonWriter
+    private static string CreateOpenFileSuccessJson(List<(string name, int type, string uniqueId)> assets)
     {
-        public string? Name { get; set; }
-        public int Type { get; set; }
-        public string? UniqueId { get; set; }
+        using var memoryStream = new MemoryStream();
+        using var writer = new Utf8JsonWriter(memoryStream);
+        
+        writer.WriteStartObject();
+        writer.WriteStartArray("assets");
+        
+        foreach (var asset in assets)
+        {
+            writer.WriteStartObject();
+            writer.WriteString("name", asset.name);
+            writer.WriteNumber("type", asset.type);
+            writer.WriteString("unique_id", asset.uniqueId);
+            writer.WriteEndObject();
+        }
+        
+        writer.WriteEndArray();
+        writer.WriteEndObject();
+        writer.Flush();
+        
+        return Encoding.UTF8.GetString(memoryStream.ToArray());
     }
+    
 
     // This method is the core logic. It accepts a byte array (the file content) and a filename.
     // It's decorated with [JSExport] to make it callable from JavaScript environments.
@@ -30,15 +48,15 @@ public static partial class JsApi
             // Create a MemoryStream from the incoming byte array.
             using (var memoryStream = new MemoryStream(fileBytes))
             {
-                var assetsManager = new WebAssetsManager();
-                
                 // Directly load the MemoryStream into AssetManager.
                 // This is the correct way to process in-memory data for WASM.
                 var reader = new FileReader(fileName, memoryStream);
+                
+                var assetsManager = AssetStudio_WebAdaptor.WebAssetsManager.Instance;
                 assetsManager.LoadFile(reader);
 
                 // Here, we simulate processing and extract some basic information.
-                var assets = new List<AssetInfo>();
+                var assets = new List<(string name, int type, string uniqueId)>();
                 foreach (var assetsFile in assetsManager.AssetsFileList)
                 {
                     foreach (var key in assetsFile.ObjectsDic.Keys)
@@ -59,19 +77,17 @@ public static partial class JsApi
                         int type = (int)asset.classID;
                         string uniqueId = $"{SHA256.HashData(Encoding.UTF8.GetBytes(assetsFile.originalPath))}_{key.ToString("x")}";
 
-                        assets.Add(new AssetInfo
-                        {
-                            Name = name,
-                            Type = type,
-                            UniqueId = uniqueId
-                        });
+                        assets.Add((
+                            name = name,
+                            type = type,
+                            uniqueId = uniqueId
+                        ));
                     }
                 }
 
                 // Serialize the results to a JSON string.
                 // This is a common pattern for returning structured data to the frontend.
-                
-                return JsonSerializer.Serialize(assets);
+                return CreateOpenFileSuccessJson(assets);
             }
         }
         catch (Exception ex)
@@ -79,7 +95,7 @@ public static partial class JsApi
             // If an error occurs, we return an error message as a JSON string.
             // This allows the frontend to display the error to the user.
 
-            return JsonSerializer.Serialize(new { error = ex.Message });
+            return null;
         }
     }
 }

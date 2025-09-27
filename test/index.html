@@ -7,6 +7,23 @@
 
 <body>
     <script type="module" src="dist/AssetStudioWASM.js"></script>
+    <script type="text/javascript">
+        function openFile(filepath) 
+        {
+            fetch(filepath)
+            .then(async r => ({ 
+                filename: r.url.substring(r.url.lastIndexOf('/') + 1).split('?')[0] || `file_${Date.now()}`,
+                bytes: await r.arrayBuffer()
+            }))
+            .then(data => AssetStudioWASM.JsApi.OpenFile(new Uint8Array(data.bytes), data.filename))
+            .then(output => console.log(output));
+        }
+
+        window.addEventListener("AssetStudioWASM.loaded", e => {
+            openFile("test");
+        });
+        
+    </script>
 </body>
 
 </html>

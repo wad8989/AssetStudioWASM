@@ -12,13 +12,15 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <RunAOTCompilation>true</RunAOTCompilation>
     <PublishTrimmed>true</PublishTrimmed>
-    <TrimMode>link</TrimMode>
-    <WasmEmitSymbolMap>false</WasmEmitSymbolMap>
+    <JsonSerializerIsReflectionEnabledByDefault>false</JsonSerializerIsReflectionEnabledByDefault>
+    <UseSystemTextJsonSourceGeneration>true</UseSystemTextJsonSourceGeneration>
   </PropertyGroup>
   <PropertyGroup>
     <WasmIncludeFullIcuData>false</WasmIncludeFullIcuData>
     <InvariantGlobalization>true</InvariantGlobalization>
-    <WasmStripILAfterAOT>true</WasmStripILAfterAOT>
+    <WasmStripILAfterAOT>false</WasmStripILAfterAOT>
+    <MonoRuntimeDebuggerEnabled>true</MonoRuntimeDebuggerEnabled>
+    <WasmEmitSymbolMap>true</WasmEmitSymbolMap>
   </PropertyGroup>
 
   <ItemGroup>
