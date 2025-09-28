@@ -6,6 +6,7 @@ using System.Runtime.InteropServices.JavaScript;
 using System.Collections.Generic;
 using System;
 using System.Security.Cryptography;
+using System.Linq;
 
 // This class acts as the main entry point for our web API.
 // It contains methods that can be called directly from JavaScript (via JSExport).
@@ -24,7 +25,7 @@ public static partial class JsApi
         {
             writer.WriteStartObject();
             writer.WriteString("name", asset.name);
-            writer.WriteNumber("type", asset.type);
+            writer.WriteString("type", ((ClassIDType)asset.type).ToString());
             writer.WriteString("unique_id", asset.uniqueId);
             writer.WriteEndObject();
         }
@@ -40,7 +41,7 @@ public static partial class JsApi
     // This method is the core logic. It accepts a byte array (the file content) and a filename.
     // It's decorated with [JSExport] to make it callable from JavaScript environments.
     [JSExport]
-    public static string OpenFile(byte[] fileBytes, string fileName)
+    public static string LoadFile(byte[] fileBytes, string fileName)
     {
         // We use a try-catch block to handle potential errors during file processing.
         try
@@ -75,7 +76,7 @@ public static partial class JsApi
                         }
 
                         int type = (int)asset.classID;
-                        string uniqueId = $"{SHA256.HashData(Encoding.UTF8.GetBytes(assetsFile.originalPath))}_{key.ToString("x")}";
+                        string uniqueId = $"{assetsFile.fileName}_{key.ToString("x")}";
 
                         assets.Add((
                             name = name,
@@ -97,6 +98,13 @@ public static partial class JsApi
 
             return null;
         }
+    }
+
+    [JSExport]
+    public static void UnloadAllFiles()
+    {
+        var assetsManager = AssetStudio_WebAdaptor.WebAssetsManager.Instance;
+        assetsManager.Clear();
     }
 
     [JSExport]

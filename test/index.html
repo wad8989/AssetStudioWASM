@@ -8,7 +8,7 @@
 <body>
     <script type="module" src="dist/AssetStudioWASM.js"></script>
     <script type="text/javascript">
-        function openFile(filepath) 
+        function LoadFile(filepath) 
         {
             fetch(filepath)
             .then(async r => ({ 
@@ -16,16 +16,16 @@
                 bytes: await r.arrayBuffer()
             }))
             .then(data => {
-                // When "The asset's Unity version has been stripped", need this line
+                // When "The asset's Unity version has been stripped", need this line to explicitly set appropiate version for the input file
                 AssetStudioWASM.JsApi.SetUnityVersionForStripped("2022.3.44f1");
 
-                return AssetStudioWASM.JsApi.OpenFile(new Uint8Array(data.bytes), data.filename)
+                return AssetStudioWASM.JsApi.LoadFile(new Uint8Array(data.bytes), data.filename)
             })
             .then(output => console.log(output));
         }
 
         window.addEventListener("AssetStudioWASM.loaded", e => {
-            openFile("test");
+            LoadFile("test");
         });
         
     </script>
