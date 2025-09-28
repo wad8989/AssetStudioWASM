@@ -15,7 +15,12 @@
                 filename: r.url.substring(r.url.lastIndexOf('/') + 1).split('?')[0] || `file_${Date.now()}`,
                 bytes: await r.arrayBuffer()
             }))
-            .then(data => AssetStudioWASM.JsApi.OpenFile(new Uint8Array(data.bytes), data.filename))
+            .then(data => {
+                // When "The asset's Unity version has been stripped", need this line
+                AssetStudioWASM.JsApi.SetUnityVersionForStripped("2022.3.44f1");
+
+                return AssetStudioWASM.JsApi.OpenFile(new Uint8Array(data.bytes), data.filename)
+            })
             .then(output => console.log(output));
         }
 

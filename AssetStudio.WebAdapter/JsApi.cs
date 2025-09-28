@@ -10,16 +10,16 @@ using System.Security.Cryptography;
 // This class acts as the main entry point for our web API.
 // It contains methods that can be called directly from JavaScript (via JSExport).
 public static partial class JsApi
-{    
+{
     // Helper method to create success JSON using JsonWriter
     private static string CreateOpenFileSuccessJson(List<(string name, int type, string uniqueId)> assets)
     {
         using var memoryStream = new MemoryStream();
         using var writer = new Utf8JsonWriter(memoryStream);
-        
+
         writer.WriteStartObject();
         writer.WriteStartArray("assets");
-        
+
         foreach (var asset in assets)
         {
             writer.WriteStartObject();
@@ -28,14 +28,14 @@ public static partial class JsApi
             writer.WriteString("unique_id", asset.uniqueId);
             writer.WriteEndObject();
         }
-        
+
         writer.WriteEndArray();
         writer.WriteEndObject();
         writer.Flush();
-        
+
         return Encoding.UTF8.GetString(memoryStream.ToArray());
     }
-    
+
 
     // This method is the core logic. It accepts a byte array (the file content) and a filename.
     // It's decorated with [JSExport] to make it callable from JavaScript environments.
@@ -51,7 +51,7 @@ public static partial class JsApi
                 // Directly load the MemoryStream into AssetManager.
                 // This is the correct way to process in-memory data for WASM.
                 var reader = new FileReader(fileName, memoryStream);
-                
+
                 var assetsManager = AssetStudio_WebAdaptor.WebAssetsManager.Instance;
                 assetsManager.LoadFile(reader);
 
@@ -97,5 +97,12 @@ public static partial class JsApi
 
             return null;
         }
+    }
+
+    [JSExport]
+    public static void SetUnityVersionForStripped(string version)
+    {
+        var assetsManager = AssetStudio_WebAdaptor.WebAssetsManager.Instance;
+        assetsManager.Options.CustomUnityVersion = new UnityVersion(version);
     }
 }

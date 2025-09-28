@@ -1,5 +1,6 @@
 using AssetStudio;
 using System;
+using System.Linq;
 
 namespace AssetStudio_WebAdaptor
 {
@@ -17,6 +18,14 @@ namespace AssetStudio_WebAdaptor
 
         // 提供一個新的公開方法
         public void LoadFile(FileReader reader)
+        {
+            this.Reflection_LoadFile(reader);
+
+            this.Reflection_ReadAssets();
+            this.Reflection_ProcessAssets();
+        }
+
+        private void Reflection_LoadFile(FileReader reader)
         {
             // 使用反射呼叫私有的 LoadFile 方法
             var method = typeof(AssetsManager).GetMethod("LoadFile",
@@ -37,7 +46,41 @@ namespace AssetStudio_WebAdaptor
             }
             else
             {
-                throw new System.InvalidOperationException("Cannot find LoadFile method");
+                throw new System.InvalidOperationException("Cannot find method");
+            }
+        }
+
+        private void Reflection_ReadAssets()
+        {
+            var method = typeof(AssetsManager).GetMethod("ReadAssets",
+                System.Reflection.BindingFlags.NonPublic |
+                System.Reflection.BindingFlags.Instance
+            );
+
+            if (method != null)
+            {
+                method.Invoke(this, null);
+            }
+            else
+            {
+                throw new System.InvalidOperationException("Cannot find method");
+            }
+        }
+
+        private void Reflection_ProcessAssets()
+        {
+            var method = typeof(AssetsManager).GetMethod("ProcessAssets",
+                System.Reflection.BindingFlags.NonPublic |
+                System.Reflection.BindingFlags.Instance
+            );
+
+            if (method != null)
+            {
+                method.Invoke(this, null);
+            }
+            else
+            {
+                throw new System.InvalidOperationException("Cannot find method");
             }
         }
     }
