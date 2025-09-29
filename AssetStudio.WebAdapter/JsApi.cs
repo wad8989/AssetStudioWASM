@@ -12,20 +12,8 @@ using System.Linq;
 // It contains methods that can be called directly from JavaScript (via JSExport).
 public static partial class JsApi
 {
-    private class AssetInfo
+    private static void writeAssetListJson(Utf8JsonWriter writer, List<AssetInfo> assets)
     {
-        public required string name;
-        public int type;
-        public required string containerPath;
-        public long uniqueId;
-    };
-
-    // Helper method to create success JSON using JsonWriter
-    private static string CreateOpenFileSuccessJson(List<AssetInfo> assets)
-    {
-        using var memoryStream = new MemoryStream();
-        using var writer = new Utf8JsonWriter(memoryStream);
-
         writer.WriteStartObject();
         writer.WriteStartArray("assets");
 
@@ -41,71 +29,86 @@ public static partial class JsApi
 
         writer.WriteEndArray();
         writer.WriteEndObject();
+    }
+
+    private static string LoadFile_CreateReturnJson()
+    {
+        using var memoryStream = new MemoryStream();
+        using var writer = new Utf8JsonWriter(memoryStream);
+
+
+        return Encoding.UTF8.GetString(memoryStream.ToArray());
+    }
+
+    // This method is the core logic. It accepts a byte array (the file content) and a filename.
+    // It's decorated with [JSExport] to make it callable from JavaScript environments.
+    [JSExport]
+    public static void LoadFile(byte[] fileBytes, string fileName)
+    {
+        // Create a MemoryStream from the incoming byte array.
+        using (var memoryStream = new MemoryStream(fileBytes))
+        {
+            // Directly load the MemoryStream into AssetManager.
+            // This is the correct way to process in-memory data for WASM.
+            var reader = new FileReader(fileName, memoryStream);
+
+            var assetsManager = AssetStudio_WebAdaptor.WebAssetsManager.Instance;
+            assetsManager.LoadFile(reader);
+        }
+    }
+
+    private class AssetInfo
+    {
+        public required string name;
+        public int type;
+        public required string containerPath;
+        public long uniqueId;
+    };
+    // Helper method to create success JSON using JsonWriter
+    private static string ListAllFiles_CreateReturnJson(List<AssetInfo> assets)
+    {
+        using var memoryStream = new MemoryStream();
+        using var writer = new Utf8JsonWriter(memoryStream);
+
+        writeAssetListJson(writer, assets);
         writer.Flush();
 
         return Encoding.UTF8.GetString(memoryStream.ToArray());
     }
 
-
-    // This method is the core logic. It accepts a byte array (the file content) and a filename.
-    // It's decorated with [JSExport] to make it callable from JavaScript environments.
     [JSExport]
-    public static string LoadFile(byte[] fileBytes, string fileName)
+    public static string ListAllAssets()
     {
-        // We use a try-catch block to handle potential errors during file processing.
-        try
+        var assetsManager = AssetStudio_WebAdaptor.WebAssetsManager.Instance;
+
+        var assets = new List<AssetInfo>();
+        foreach (var assetsFile in assetsManager.AssetsFileList)
         {
-            // Create a MemoryStream from the incoming byte array.
-            using (var memoryStream = new MemoryStream(fileBytes))
+            foreach (var key in assetsFile.ObjectsDic.Keys)
             {
-                // Directly load the MemoryStream into AssetManager.
-                // This is the correct way to process in-memory data for WASM.
-                var reader = new FileReader(fileName, memoryStream);
+                var asset = assetsFile.ObjectsDic[key];  // Assuming ObjectFactory exists in your fork; adjust if using manual switch
+                if (asset == null) continue;
 
-                var assetsManager = AssetStudio_WebAdaptor.WebAssetsManager.Instance;
-                assetsManager.LoadFile(reader);
-
-                // Here, we simulate processing and extract some basic information.
-                var assets = new List<AssetInfo>();
-                foreach (var assetsFile in assetsManager.AssetsFileList)
+                string name = "Unnamed Asset";
+                if (asset is GameObject gameObject)
                 {
-                    foreach (var key in assetsFile.ObjectsDic.Keys)
-                    {
-                        var asset = assetsFile.ObjectsDic[key];  // Assuming ObjectFactory exists in your fork; adjust if using manual switch
-                        if (asset == null) continue;
-
-                        string name = "Unnamed Asset";
-                        if (asset is GameObject gameObject)
-                        {
-                            name = gameObject.m_Name;
-                        }
-                        else if (asset is NamedObject namedObject)
-                        {
-                            name = namedObject.m_Name;
-                        }
-
-                        assets.Add(new AssetInfo
-                        {
-                            name = name,
-                            type = asset.classID,
-                            containerPath = assetsFile.fullName,
-                            uniqueId = key
-                        });
-                    }
+                    name = gameObject.m_Name;
+                }
+                else if (asset is NamedObject namedObject)
+                {
+                    name = namedObject.m_Name;
                 }
 
-                // Serialize the results to a JSON string.
-                // This is a common pattern for returning structured data to the frontend.
-                return CreateOpenFileSuccessJson(assets);
+                assets.Add(new AssetInfo
+                {
+                    name = name,
+                    type = asset.classID,
+                    containerPath = assetsFile.fullName,
+                    uniqueId = key
+                });
             }
         }
-        catch (Exception ex)
-        {
-            // If an error occurs, we return an error message as a JSON string.
-            // This allows the frontend to display the error to the user.
-
-            return null;
-        }
+        return ListAllFiles_CreateReturnJson(assets);
     }
 
     [JSExport]

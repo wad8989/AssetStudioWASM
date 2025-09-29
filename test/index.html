@@ -8,6 +8,7 @@
         function LoadURL(filepath) 
         {
             AssetStudioWASM.LoadURL(filepath)
+            .then(() => AssetStudioWASM.ListAllAssets())
             .then(output => console.log(output));
         }
 
