@@ -12,8 +12,16 @@ using System.Linq;
 // It contains methods that can be called directly from JavaScript (via JSExport).
 public static partial class JsApi
 {
+    private class AssetInfo
+    {
+        public required string name;
+        public int type;
+        public required string containerPath;
+        public long uniqueId;
+    };
+
     // Helper method to create success JSON using JsonWriter
-    private static string CreateOpenFileSuccessJson(List<(string name, int type, string uniqueId)> assets)
+    private static string CreateOpenFileSuccessJson(List<AssetInfo> assets)
     {
         using var memoryStream = new MemoryStream();
         using var writer = new Utf8JsonWriter(memoryStream);
@@ -26,7 +34,8 @@ public static partial class JsApi
             writer.WriteStartObject();
             writer.WriteString("name", asset.name);
             writer.WriteString("type", ((ClassIDType)asset.type).ToString());
-            writer.WriteString("unique_id", asset.uniqueId);
+            writer.WriteString("container_path", asset.containerPath);
+            writer.WriteString("unique_id", asset.uniqueId.ToString("x"));
             writer.WriteEndObject();
         }
 
@@ -57,7 +66,7 @@ public static partial class JsApi
                 assetsManager.LoadFile(reader);
 
                 // Here, we simulate processing and extract some basic information.
-                var assets = new List<(string name, int type, string uniqueId)>();
+                var assets = new List<AssetInfo>();
                 foreach (var assetsFile in assetsManager.AssetsFileList)
                 {
                     foreach (var key in assetsFile.ObjectsDic.Keys)
@@ -75,14 +84,13 @@ public static partial class JsApi
                             name = namedObject.m_Name;
                         }
 
-                        int type = (int)asset.classID;
-                        string uniqueId = $"{assetsFile.fileName}_{key.ToString("x")}";
-
-                        assets.Add((
+                        assets.Add(new AssetInfo
+                        {
                             name = name,
-                            type = type,
-                            uniqueId = uniqueId
-                        ));
+                            type = asset.classID,
+                            containerPath = assetsFile.fullName,
+                            uniqueId = key
+                        });
                     }
                 }
 
