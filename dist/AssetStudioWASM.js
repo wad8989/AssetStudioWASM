@@ -8,7 +8,28 @@ async function init() {
     return getAssemblyExports('AssetStudio.WebAdapter.dll');
 }
 
-const AssetStudioWASM = await init();
+const dotasm = await init();
+
+const AssetStudioWASM = {};
+
+Object.setPrototypeOf(AssetStudioWASM, dotasm.JsApi);
+
+AssetStudioWASM.LoadURL = function (filepath) {
+    return fetch(filepath)
+        .then(async r => ({ 
+            filename: r.url.substring(r.url.lastIndexOf('/') + 1).split('?')[0] || `file_${Date.now()}`,
+            bytes: await r.arrayBuffer()
+        }))
+        .then(data => {
+            return this.LoadFile(new Uint8Array(data.bytes), data.filename)
+        })
+};
+
+//SAMPLE: Testing override original func from binary
+// AssetStudioWASM.LoadFile = function(bytes, name) {
+//     console.log("Testing...Testing...override");
+//     return this.__proto__.LoadFile(bytes, name);
+// }
 
 window.AssetStudioWASM = AssetStudioWASM;
 

@@ -8,24 +8,17 @@
 <body>
     <script type="module" src="dist/AssetStudioWASM.js"></script>
     <script type="text/javascript">
-        function LoadFile(filepath) 
+        function LoadURL(filepath) 
         {
-            fetch(filepath)
-            .then(async r => ({ 
-                filename: r.url.substring(r.url.lastIndexOf('/') + 1).split('?')[0] || `file_${Date.now()}`,
-                bytes: await r.arrayBuffer()
-            }))
-            .then(data => {
-                // When "The asset's Unity version has been stripped", need this line to explicitly set appropiate version for the input file
-                AssetStudioWASM.JsApi.SetUnityVersionForStripped("2022.3.44f1");
-
-                return AssetStudioWASM.JsApi.LoadFile(new Uint8Array(data.bytes), data.filename)
-            })
+            AssetStudioWASM.LoadURL(filepath)
             .then(output => console.log(output));
         }
 
         window.addEventListener("AssetStudioWASM.loaded", e => {
-            LoadFile("test");
+            // When "The asset's Unity version has been stripped", need this line to explicitly set appropiate version for the input file
+            AssetStudioWASM.SetUnityVersionForStripped("2022.3.44f1");
+
+            LoadURL("test");
         });
         
     </script>
