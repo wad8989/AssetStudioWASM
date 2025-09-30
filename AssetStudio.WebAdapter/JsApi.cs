@@ -14,8 +14,7 @@ public static partial class JsApi
 {
     private static void writeAssetListJson(Utf8JsonWriter writer, List<AssetInfo> assets)
     {
-        writer.WriteStartObject();
-        writer.WriteStartArray("assets");
+        writer.WriteStartArray();
 
         foreach (var asset in assets)
         {
@@ -28,7 +27,6 @@ public static partial class JsApi
         }
 
         writer.WriteEndArray();
-        writer.WriteEndObject();
     }
 
     private static string LoadFile_CreateReturnJson()
@@ -60,7 +58,7 @@ public static partial class JsApi
     private class AssetInfo
     {
         public required string name;
-        public int type;
+        public ClassIDType type;
         public required string containerPath;
         public long uniqueId;
     };
@@ -102,7 +100,7 @@ public static partial class JsApi
                 assets.Add(new AssetInfo
                 {
                     name = name,
-                    type = asset.classID,
+                    type = asset.type,
                     containerPath = assetsFile.fullName,
                     uniqueId = key
                 });
@@ -123,5 +121,23 @@ public static partial class JsApi
     {
         var assetsManager = AssetStudio_WebAdaptor.WebAssetsManager.Instance;
         assetsManager.Options.CustomUnityVersion = new UnityVersion(version);
+    }
+
+    [JSExport]
+    public static byte[] ExtractAssetResource(string assetJson)
+    {
+        var jsonElem = JsonDocument.Parse(assetJson).RootElement;
+        var asset = new AssetInfo
+        {
+            name = jsonElem.GetProperty("name").GetString(),
+            type = (ClassIDType)Enum.Parse(typeof(ClassIDType), jsonElem.GetProperty("type").GetString(), true),
+            containerPath = jsonElem.GetProperty("container_path").GetString(),
+            uniqueId = (long)Convert.ToUInt64(jsonElem.GetProperty("unique_id").GetString(), 16),
+        };
+
+        // Logger.Debug(assetJson);
+        // Logger.Debug($"{asset.name}, {asset.type}, {asset.containerPath}, {asset.uniqueId}");
+
+        return null;
     }
 }

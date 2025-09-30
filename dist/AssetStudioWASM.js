@@ -28,6 +28,9 @@ AssetStudioWASM.LoadURL = function (filepath) {
 AssetStudioWASM.ListAllAssets = function() {
     return JSON.parse(this.__proto__.ListAllAssets());
 }
+AssetStudioWASM.ExtractAssetResource = function(asset) {
+    return this.__proto__.ExtractAssetResource(JSON.stringify(asset));
+}
 
 window.AssetStudioWASM = AssetStudioWASM;
 

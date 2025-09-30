@@ -9,7 +9,9 @@
         {
             AssetStudioWASM.LoadURL(filepath)
             .then(() => AssetStudioWASM.ListAllAssets())
-            .then(output => console.log(output));
+            .then(output => {console.log(output); return output})
+            .then(assets => AssetStudioWASM.ExtractAssetResource(assets[0]))
+            .then(resources => console.log(resources));
         }
 
         window.addEventListener("AssetStudioWASM.loaded", e => {
