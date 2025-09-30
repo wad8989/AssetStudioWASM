@@ -25,11 +25,9 @@ AssetStudioWASM.LoadURL = function (filepath) {
         })
 };
 
-//SAMPLE: Testing override original func from binary
-// AssetStudioWASM.LoadFile = function(bytes, name) {
-//     console.log("Testing...Testing...override");
-//     return this.__proto__.LoadFile(bytes, name);
-// }
+AssetStudioWASM.ListAllAssets = function() {
+    return JSON.parse(this.__proto__.ListAllAssets());
+}
 
 window.AssetStudioWASM = AssetStudioWASM;
 
