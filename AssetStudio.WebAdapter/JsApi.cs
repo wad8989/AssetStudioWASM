@@ -138,6 +138,7 @@ public static partial class JsApi
         // Logger.Debug(assetJson);
         // Logger.Debug($"{asset.name}, {asset.type}, {asset.containerPath}, {asset.uniqueId}");
 
-        return null;
+        var assetsManager = AssetStudio_WebAdaptor.WebAssetsManager.Instance;
+        return assetsManager.ExtractResource(asset.containerPath, asset.uniqueId, asset.type);
     }
 }

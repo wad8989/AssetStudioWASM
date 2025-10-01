@@ -29,7 +29,16 @@ AssetStudioWASM.ListAllAssets = function() {
     return JSON.parse(this.__proto__.ListAllAssets());
 }
 AssetStudioWASM.ExtractAssetResource = function(asset) {
-    return this.__proto__.ExtractAssetResource(JSON.stringify(asset));
+    let data = this.__proto__.ExtractAssetResource(JSON.stringify(asset));
+    let mimeType = "application/octet-stream";
+    switch (asset.type) {
+        case "Texture2D":   mimeType = "image/x-unknown"; break;
+        case "AudioClip":   mimeType = "audio/x-unknown"; break;
+        case "VideoClip":   mimeType = "video/x-unknown"; break;
+        case "TextAsset":   mimeType = "text/plain"; break;
+        case "Font":        mimeType = "font/x-unknown"; break;
+    }
+    return URL.createObjectURL(new Blob([data], {type: mimeType}));
 }
 
 window.AssetStudioWASM = AssetStudioWASM;

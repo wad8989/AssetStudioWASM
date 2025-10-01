@@ -7,18 +7,25 @@
     <script type="text/javascript">
         function LoadURL(filepath) 
         {
-            AssetStudioWASM.LoadURL(filepath)
+            return AssetStudioWASM.LoadURL(filepath)
             .then(() => AssetStudioWASM.ListAllAssets())
-            .then(output => {console.log(output); return output})
-            .then(assets => AssetStudioWASM.ExtractAssetResource(assets[0]))
-            .then(resources => console.log(resources));
+            .then(output => {window.assets = output; return output});
+        }
+
+        function Extract(asset)
+        {
+            if (!asset.url) {
+                asset.url = AssetStudioWASM.ExtractAssetResource(asset);
+            }
+            console.log(asset.url);
         }
 
         window.addEventListener("AssetStudioWASM.loaded", e => {
             // When "The asset's Unity version has been stripped", need this line to explicitly set appropiate version for the input file
             AssetStudioWASM.SetUnityVersionForStripped("2022.3.44f1");
 
-            LoadURL("test");
+            LoadURL("test")
+            .then(() => Extract(assets[0]));
         });
         
     </script>

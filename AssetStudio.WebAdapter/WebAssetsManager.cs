@@ -1,6 +1,8 @@
 using AssetStudio;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace AssetStudio_WebAdaptor
 {
@@ -16,7 +18,6 @@ namespace AssetStudio_WebAdaptor
             Logger.Default = logger;
         }
 
-        // 提供一個新的公開方法
         public void LoadFile(FileReader reader)
         {
             this.Reflection_LoadFile(reader);
@@ -27,7 +28,6 @@ namespace AssetStudio_WebAdaptor
 
         private void Reflection_LoadFile(FileReader reader)
         {
-            // 使用反射呼叫私有的 LoadFile 方法
             var method = typeof(AssetsManager).GetMethod("LoadFile",
                 System.Reflection.BindingFlags.NonPublic |
                 System.Reflection.BindingFlags.Instance,
@@ -82,6 +82,66 @@ namespace AssetStudio_WebAdaptor
             {
                 throw new System.InvalidOperationException("Cannot find method");
             }
+        }
+
+        public byte[] ExtractResource(string containerPath, long key, ClassIDType type)
+        { 
+            var assetsFile = AssetsFileList.FirstOrDefault(f => f.fullName == containerPath);
+            if (assetsFile == null)
+            {
+                throw new System.InvalidOperationException($"Assets file not found for container path: {containerPath}");
+            }
+
+            AssetStudio.Object obj;
+            if (assetsFile.ObjectsDic.TryGetValue(key, out obj) && obj != null)
+            {
+                // Object already loaded
+            }
+            else
+            {
+                throw new NotSupportedException($"Asset type {type} not supported for extraction");
+            }
+
+            // Verify type matches
+            if (obj.type != type)
+            {
+                throw new InvalidCastException($"Loaded object type {obj.type} does not match expected {type}");
+            }
+
+            byte[] data = null;
+            switch (obj)
+            {
+                case Texture2D m_Texture2D:
+                    data = m_Texture2D.image_data.GetData();
+                    break;
+                case AudioClip m_AudioClip:
+                    data = m_AudioClip.m_AudioData.GetData();
+                    break;
+                case VideoClip m_VideoClip:
+                    data = m_VideoClip.m_VideoData.GetData();
+                    break;
+                case TextAsset m_Text:
+                    data = Encoding.UTF8.GetBytes(m_Text.Dump());
+                    break;
+                case Font m_Font:
+                    if (m_Font.m_FontData != null)
+                    {
+                        // var extension = ".ttf";
+                        // if (m_Font.m_FontData[0] == 79 && m_Font.m_FontData[1] == 84 && m_Font.m_FontData[2] == 84 && m_Font.m_FontData[3] == 79)
+                        // {
+                        //     extension = ".otf";
+                        // }
+                        data = m_Font.m_FontData;
+                    }
+                    break;
+            }
+
+            if (data == null || data.Length == 0)
+            {
+                throw new InvalidOperationException("No data extracted from asset");
+            }
+
+            return data;
         }
     }
 }
