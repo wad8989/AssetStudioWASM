@@ -1,38 +1,397 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-    <title>WASM Test</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AssetStudioWASM Test</title>
+
+
+
+    <!-- TUTORIAL -->
     <script type="module" src="dist/AssetStudioWASM.js"></script>
-    <script type="text/javascript">
-        function LoadURL(filepath) 
-        {
+    <script type="text/javascript" id="TUTORIAL">
+        //TUTORIAL: Asset Studio WASM Use Example
+
+        function LoadURL(filepath) {
+            //TUTORIAL: Use `AssetStudioWASM.LoadURL` to load the unity package, or use `AssetStudioWASM.LoadFile`
             return AssetStudioWASM.LoadURL(filepath)
-            .then(() => AssetStudioWASM.ListAllAssets())
-            .then(output => {window.assets = output; return output});
+                //TUTORIAL: Use `AssetStudioWASM.ListAllAssets`, returns a array of asset info object
+                .then(() => console.log(AssetStudioWASM.ListAllAssets()))
+                .then(()=>processLoadedAssets());
         }
 
-        function Extract(asset)
-        {
+        function Extract(asset) {
+            if (!asset) {
+                console.error(`Invalid asset: ${asset}`);
+                return;
+            }
+
             if (!asset.url) {
+                //TUTORIAL: Use `AssetStudioWASM.ExtractAssetResource` get the resource, returns blob URL
+                //REMARKS: Your responsible to decide when to use `URL.revokeObjectURL`
                 asset.url = AssetStudioWASM.ExtractAssetResource(asset);
             }
             console.log(asset.url);
         }
 
         window.addEventListener("AssetStudioWASM.loaded", e => {
-            // When "The asset's Unity version has been stripped", need this line to explicitly set appropiate version for the input file
-            AssetStudioWASM.SetUnityVersionForStripped("2022.3.44f1");
+            const urlParams = new URLSearchParams(window.location.search);
 
-            LoadURL("test")
-            .then(() => Extract(assets[0]));
+            const unityVersion = urlParams.get('unity_version');
+            if (unityVersion) {
+                //TUTORIAL: Use `AssetStudioWASM.SetUnityVersionForStripped` if "The asset's Unity version has been stripped", need this line to explicitly set appropiate version for the input file
+                AssetStudioWASM.SetUnityVersionForStripped(unityVersion);
+                console.log(`Set Unity version for stripped assets to: ${unityVersion}`);
+            }
+
+            // Load a test next to index.html as a quick sample, if you put it there
+            LoadURL("test").then(() => Extract(assets[0]));
         });
-        
     </script>
+
+
+
+    <!-- Material Design stuff -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+    <style>
+        /* Ensure body takes up the full viewport height */
+        html {
+            height: 100%;
+        }
+        body {
+            min-height: 100%;
+        }
+
+        /* Make the preview section sticky to the top */
+        #preview {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        #preview .card-content .card-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            line-height: 1.5;
+            margin-bottom: 0;
+        }
+        
+        #preview-content {
+            transition: max-height 0.3s ease-out, padding 0.3s ease-out, opacity 0.3s ease-out;
+            max-height: 70vh;
+            overflow: auto;
+            opacity: 1;
+        }
+
+        #preview-content.collapsed {
+            max-height: 0;
+            opacity: 0;
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
+            overflow: hidden;
+        }
+
+        #toggle-preview {
+            padding: 0 10px;
+        }
+
+        /* Drag-and-drop overlay */
+        #drop-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 150, 136, 0.7);
+            z-index: 9999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            text-align: center;
+            border: 4px dashed #fff;
+            box-sizing: border-box;
+            transition: opacity 0.2s ease-in-out;
+            opacity: 0;
+        }
+
+        #drop-overlay.visible {
+            display: flex;
+            opacity: 1;
+        }
+
+        #drop-overlay .message { font-size: 1.5rem; }
+        #drop-overlay .message i { font-size: 5rem; display: block; }
+
+        /* Filter controls */
+        #filter-controls {
+            margin-top: 2rem;
+        }
+
+        #type-filters p {
+             margin-bottom: 10px;
+        }
+
+        #type-filters label {
+            margin-right: 15px;
+            display: inline-block;
+        }
+        
+        /* Initial prompt message */
+        #initial-prompt {
+            margin-top: 4rem;
+        }
+    </style>
 </head>
-
 <body>
-    
-</body>
+    <div id="drop-overlay">
+        <div class="message">
+            <i class="material-icons">cloud_upload</i>
+            <p>Drop file to load</p>
+        </div>
+    </div>
 
+    <div class="container">
+        <div id="preview" class="card">
+            <div class="card-content">
+                <span class="card-title">
+                    Preview
+                    <a href="#!" class="btn-flat waves-effect waves-light" id="toggle-preview">
+                        <i class="material-icons">keyboard_arrow_down</i>
+                    </a>
+                </span>
+                <div id="preview-content"></div>
+            </div>
+        </div>
+        
+        <h4>Loaded Assets</h4>
+        
+        <div class="row card-panel" id="filter-controls">
+             <div class="input-field col s12 m5">
+                <i class="material-icons prefix">search</i>
+                <input id="search-input" type="text" class="validate">
+                <label for="search-input">Search by name</label>
+            </div>
+            <div class="col s12 m7" id="type-filters-container">
+                <h6>Filter by Type</h6>
+                <div id="type-filters">
+                    </div>
+            </div>
+        </div>
+
+        <div class="row" id="asset-cards">
+             <div id="initial-prompt" class="col s12 center-align">
+                <i class="material-icons large grey-text text-lighten-1">touch_app</i>
+                <h5 class="grey-text">Drag & drop a file to begin</h5>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        // Global store for all loaded assets
+        window.assets = [];
+            
+        document.getElementById('filter-controls').style.display = 'none';
+        
+        const previewableTypes = ['Texture2D', 'AudioClip', 'VideoClip', 'TextAsset', 'Font'];
+        
+        /**
+         * Processes newly loaded assets, creates filters, and triggers the first render.
+         */
+        function processLoadedAssets() {
+            window.assets = AssetStudioWASM.ListAllAssets();
+
+            if (!window.assets.length) return;
+            
+            // Show filter controls and hide the initial prompt
+            document.getElementById('filter-controls').style.display = 'flex';
+
+            // --- Generate Type Filter Checkboxes ---
+            const types = [...new Set(window.assets.map(a => a.type))].sort();
+            const filterContainer = document.getElementById('type-filters');
+            filterContainer.innerHTML = ''; // Clear old filters
+            
+            if (types.length > 1) {
+                types.forEach(type => {
+                    const label = document.createElement('label');
+                    label.innerHTML = `
+                        <input type="checkbox" class="filled-in asset-type-filter" value="${type}" ${previewableTypes.includes(type)?"checked":""} />
+                        <span>${type}</span>
+                    `;
+                    filterContainer.appendChild(label);
+                });
+            } else {
+                filterContainer.innerHTML = '<p>Only one asset type found.</p>';
+            }
+
+            renderFilteredAssets(); // Initial render
+        }
+
+        /**
+         * Filters and displays assets based on current search and checkbox values.
+         */
+        function renderFilteredAssets() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            const checkedTypes = [...document.querySelectorAll('.asset-type-filter:checked')].map(cb => cb.value);
+
+            const filteredAssets = window.assets.filter(asset => {
+                const name = asset.name || '';
+                const nameMatch = name.toLowerCase().includes(searchTerm);
+                const typeMatch = checkedTypes.includes(asset.type);
+                return nameMatch && typeMatch;
+            });
+            
+            const container = document.getElementById('asset-cards');
+            container.innerHTML = ''; // Clear previous results
+
+            if (filteredAssets.length === 0) {
+                 container.innerHTML = `<div class="col s12 center-align"><p class="grey-text">No assets match your filters.</p></div>`;
+                 return;
+            }
+
+            filteredAssets.forEach(asset => {
+                const col = document.createElement('div');
+                col.className = 'col s12 m4';
+                const card = document.createElement('div');
+                card.className = 'card blue-grey darken-1';
+                const content = document.createElement('div');
+                content.className = 'card-content white-text';
+                content.innerHTML = `<span class="card-title">${asset.name || 'Unnamed'}</span><p>Type: ${asset.type}</p>`;
+                const action = document.createElement('div');
+                action.className = 'card-action';
+                const a = document.createElement('a');
+                a.href = '#';
+                a.textContent = 'Preview';
+                a.onclick = (e) => { e.preventDefault(); previewAsset(asset, a); };
+                action.appendChild(a);
+                if (!previewableTypes.includes(asset.type)) {
+                    a.style.display = 'none';
+                }
+                card.appendChild(content);
+                card.appendChild(action);
+                col.appendChild(card);
+                container.appendChild(col);
+            });
+        }
+
+        function previewAsset(asset, sender) {
+            // Expand the preview section automatically
+            const previewContent = document.getElementById('preview-content');
+            const toggleIcon = document.querySelector('#toggle-preview i');
+            if (previewContent.classList.contains('collapsed')) {
+                previewContent.classList.remove('collapsed');
+                toggleIcon.textContent = 'keyboard_arrow_down';
+            }
+
+            let url;
+            try {
+                url = AssetStudioWASM.ExtractAssetResource(asset);    
+            } catch (e) {
+                console.error(e);
+            }
+            
+            const content = document.getElementById('preview-content');
+            content.innerHTML = '';
+            let elem;
+            switch (asset.type) {
+                case 'Texture2D':
+                    elem = document.createElement('img');
+                    elem.src = url;
+                    elem.style.maxWidth = '100%';
+                    break;
+                case 'AudioClip':
+                    elem = document.createElement('audio');
+                    elem.src = url;
+                    elem.controls = true;
+                    break;
+                case 'VideoClip':
+                    elem = document.createElement('video');
+                    elem.src = url;
+                    elem.controls = true;
+                    elem.style.maxWidth = '100%';
+                    break;
+                case 'TextAsset':
+                    fetch(url).then(r => r.text()).then(text => {
+                        const pre = document.createElement('pre');
+                        pre.textContent = text;
+                        content.appendChild(pre);
+                    });
+                    return;
+                case 'Font':
+                    const fontFace = new FontFace('previewFont', `url(${url})`);
+                    fontFace.load().then(font => {
+                        document.fonts.add(font);
+                        const div = document.createElement('div');
+                        div.style.fontFamily = 'previewFont';
+                        div.style.fontSize = '24px';
+                        div.textContent = 'The quick brown fox jumps over the lazy dog.';
+                        content.appendChild(div);
+                    }).catch(err => {
+                        const div = document.createElement('div');
+                        div.textContent = 'Failed to load font: ' + err.message;
+                        content.appendChild(div);
+                    });
+                    return;
+                default:
+                    elem = document.createElement('div');
+                    elem.textContent = 'Unsupported asset type';
+                    sender.textContent = 'Preview Unsupported';
+                    sender.onclick = null;
+            }
+            if (elem) content.appendChild(elem);
+        }
+    </script>
+    
+    <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Collapse/Expand functionality ---
+            const toggleButton = document.getElementById('toggle-preview');
+            const previewContent = document.getElementById('preview-content');
+            const toggleIcon = toggleButton.querySelector('i');
+            previewContent.classList.add('collapsed');
+            toggleIcon.textContent = 'keyboard_arrow_up';
+
+            toggleButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                previewContent.classList.toggle('collapsed');
+                toggleIcon.textContent = previewContent.classList.contains('collapsed') ? 'keyboard_arrow_up' : 'keyboard_arrow_down';
+            });
+            
+            // --- Drag and Drop functionality ---
+            const dropOverlay = document.getElementById('drop-overlay');
+            document.body.addEventListener('dragover', e => {
+                e.preventDefault();
+                dropOverlay.classList.add('visible');
+            });
+            dropOverlay.addEventListener('dragleave', () => dropOverlay.classList.remove('visible'));
+            document.body.addEventListener('drop', async e => {
+                e.preventDefault();
+                dropOverlay.classList.remove('visible');
+                const file = e.dataTransfer.files[0];
+                if (!file) return;
+                const buffer = await file.arrayBuffer();
+                await AssetStudioWASM.LoadFile(new Uint8Array(buffer), file.name);
+                processLoadedAssets();
+            });
+
+            // --- Filter Event Listeners ---
+            const searchInput = document.getElementById('search-input');
+            searchInput.addEventListener('keyup', () => {
+                M.updateTextFields();
+                renderFilteredAssets();
+            });
+
+            const typeFilters = document.getElementById('type-filters-container');
+            typeFilters.addEventListener('change', (e) => {
+                if (e.target.classList.contains('asset-type-filter')) {
+                    renderFilteredAssets();
+                }
+            });
+        });
+    </script>
+</body>
 </html>
