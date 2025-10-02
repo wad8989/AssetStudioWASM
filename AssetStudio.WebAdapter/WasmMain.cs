@@ -1,11 +1,14 @@
 using System;
 
-public static class WasmMain
+namespace AssetStudio_WebAdaptor
 {
-    // Minimal entry point so `dotnet publish -r browser-wasm` succeeds.
-    // It can be empty — runtime initialization will still occur and JS can call [JSExport] methods.
-    public static void Main(string[] args)
+    public static class WasmMain
     {
-        // Intentionally empty.
+        // Minimal entry point so `dotnet publish -r browser-wasm` succeeds.
+        // It can be empty — runtime initialization will still occur and JS can call [JSExport] methods.
+        public static void Main(string[] args)
+        {
+            // Intentionally empty.
+        }
     }
 }
