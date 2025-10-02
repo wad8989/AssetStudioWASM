@@ -84,10 +84,14 @@ public static partial class JsApi
         {
             foreach (var key in assetsFile.ObjectsDic.Keys)
             {
-                var asset = assetsFile.ObjectsDic[key];  // Assuming ObjectFactory exists in your fork; adjust if using manual switch
-                if (asset == null) continue;
+                var asset = assetsFile.ObjectsDic[key];
+                if (asset == null)
+                {
+                    Logger.Debug($"Skipped {key}. asset == null");
+                    continue;
+                }
 
-                string name = "Unnamed Asset";
+                string name = $"{asset.type} #{(UInt64)key}";
                 if (asset is GameObject gameObject)
                 {
                     name = gameObject.m_Name;
