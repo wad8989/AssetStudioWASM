@@ -1,5 +1,3 @@
-using System;
-
 namespace AssetStudio_WebAdaptor
 {
     public static class WasmMain
