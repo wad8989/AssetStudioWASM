@@ -77,7 +77,7 @@
                 "type": "pickString",
                 "description": "Select build configuration",
                 "options": ["Debug", "Release"],
-                "default": "Release"
+                "default": "Debug"
             }
         ]
     },
