@@ -12,7 +12,7 @@ const dotasm = await init();
 
 const AssetStudioWASM = {};
 
-Object.setPrototypeOf(AssetStudioWASM, dotasm.JsApi);
+Object.setPrototypeOf(AssetStudioWASM, dotasm.AssetStudio_WebAdaptor.JsApi);
 
 AssetStudioWASM.LoadURL = function (filepath) {
     return fetch(filepath)
