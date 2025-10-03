@@ -1,0 +1,10 @@
+<linker>
+  <assembly fullname="AssetStudio">
+    <type fullname="AssetStudio.Texture2D" preserve="all" />
+    <type fullname="AssetStudio.AnimationClip" preserve="all" />
+    <type fullname="AssetStudio.Material" preserve="all" />
+    <type fullname="AssetStudio.Texture2DArray" preserve="all" />
+    <type fullname="AssetStudio.GLTextureSettings" preserve="all" />
+    <type fullname="AssetStudio.QuaternionCurve" preserve="all" />
+  </assembly>
+</linker>

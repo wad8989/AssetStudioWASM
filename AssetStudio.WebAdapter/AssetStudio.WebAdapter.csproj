@@ -12,7 +12,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <RunAOTCompilation>true</RunAOTCompilation>
     <PublishTrimmed>true</PublishTrimmed>
-    <JsonSerializerIsReflectionEnabledByDefault>false</JsonSerializerIsReflectionEnabledByDefault>
+    <JsonSerializerIsReflectionEnabledByDefault>true</JsonSerializerIsReflectionEnabledByDefault>
     <UseSystemTextJsonSourceGeneration>true</UseSystemTextJsonSourceGeneration>
   </PropertyGroup>
   <PropertyGroup>
@@ -31,4 +31,8 @@
     <PackageReference Include="System.Text.Json" Version="9.0.0-preview.6.24327.7" />
   </ItemGroup>
   
+  <ItemGroup>
+    <TrimmerRootDescriptor Include="linker.xml" />
+  </ItemGroup>
+
 </Project>
