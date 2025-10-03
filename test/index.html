@@ -44,8 +44,9 @@
                 console.log(`Set Unity version for stripped assets to: ${unityVersion}`);
             }
 
+            var initURL = urlParams.get('url') ?? "test";
             // Load a test next to index.html as a quick sample, if you put it there
-            LoadURL("test").then(() => Extract(assets[0]));
+            LoadURL(initURL).then(() => Extract(assets[0]));
         });
     </script>
 
