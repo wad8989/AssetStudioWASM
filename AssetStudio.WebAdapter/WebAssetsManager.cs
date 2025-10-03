@@ -1,8 +1,8 @@
 using AssetStudio;
 using System;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
-using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace AssetStudio_WebAdaptor
@@ -23,7 +23,7 @@ namespace AssetStudio_WebAdaptor
         {
             this.Reflection_LoadFile(reader);
 
-            this.ReadAssets();
+            this.Reflection_ReadAssets();
             this.Reflection_ProcessAssets();
         }
 
@@ -48,93 +48,6 @@ namespace AssetStudio_WebAdaptor
             else
             {
                 throw new System.InvalidOperationException("Cannot find method");
-            }
-        }
-
-        private void ReadAssets()
-        {
-
-            this.Reflection_ReadAssets();
-
-            //REMARKS: Not running at all. But keeping this trigger trimmer not to trimm .ctor
-            foreach (var assetsFile in AssetsFileList)
-            {
-                foreach (var objectInfo in assetsFile.m_Objects)
-                {
-                    if (!assetsFile.ObjectsDic.ContainsKey(objectInfo.m_PathID))
-                    {
-                        try
-                        {
-                            var jsonOptions = new JsonSerializerOptions
-                            {
-                                TypeInfoResolver = AssetStudioJsonContext.Default,
-                                Converters = { new JsonConverterHelper.ByteArrayConverter(), new JsonConverterHelper.PPtrConverter(), new JsonConverterHelper.KVPConverter() },
-                                NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals,
-                                PropertyNameCaseInsensitive = true,
-                                IncludeFields = true,
-                            };
-
-                            var objectReader = new ObjectReader(assetsFile.reader, assetsFile, objectInfo);
-                            /*
-                            //REMARKS: No public API for filter type in AssetStudioWASM
-                            if (filteredAssetTypesList.Count > 0 && !filteredAssetTypesList.Contains(objectReader.type))
-                            {
-                                continue;
-                            }
-                            */
-
-                            AssetStudio.Object obj = null;
-                            Logger.Debug($"JSON:\n{Encoding.UTF8.GetString(TypeTreeHelper.ReadTypeByteArray(objectReader.serializedType.m_Type, objectReader))}");
-                            switch (objectReader.type)
-                            {
-                                case ClassIDType.AnimationClip:
-                                    // obj = new AnimationClip(objectReader);
-                                    obj = objectReader.serializedType?.m_Type != null && LoadViaTypeTree
-                                        ? new AnimationClip(objectReader, TypeTreeHelper.ReadTypeByteArray(objectReader.serializedType.m_Type, objectReader), jsonOptions, objectInfo)
-                                        : new AnimationClip(objectReader);
-                                    break;
-                                case ClassIDType.Material:
-                                    // obj = new Material(objectReader);
-                                    obj = objectReader.serializedType?.m_Type != null && LoadViaTypeTree
-                                        ? new Material(objectReader, TypeTreeHelper.ReadTypeByteArray(objectReader.serializedType.m_Type, objectReader), jsonOptions)
-                                        : new Material(objectReader);
-                                    break;
-                                case ClassIDType.Texture2D:
-                                    // obj = new Texture2D(objectReader);
-                                    obj = objectReader.serializedType?.m_Type != null && LoadViaTypeTree
-                                        ? new Texture2D(objectReader, TypeTreeHelper.ReadTypeByteArray(objectReader.serializedType.m_Type, objectReader), jsonOptions)
-                                        : new Texture2D(objectReader);
-                                    break;
-                                case ClassIDType.Texture2DArray:
-                                    // obj = new Texture2DArray(objectReader);
-                                    obj = objectReader.serializedType?.m_Type != null && LoadViaTypeTree
-                                        ? new Texture2DArray(objectReader, TypeTreeHelper.ReadTypeByteArray(objectReader.serializedType.m_Type, objectReader), jsonOptions)
-                                        : new Texture2DArray(objectReader);
-                                    break;
-                                default:
-                                    Logger.Debug($"default: {objectReader.type}");
-                                    break;
-                            }
-
-                            if (obj != null)
-                            {
-                                assetsFile.AddObject(obj);
-                            }
-                        }
-                        catch (Exception e)
-                        {
-                            var sb = new StringBuilder();
-                            sb.AppendLine("Unable to patch object")
-                                .AppendLine($"Assets {assetsFile.fileName}")
-                                .AppendLine($"Path {assetsFile.originalPath}")
-                                .AppendLine($"Type {(ClassIDType)objectInfo.classID}")
-                                .AppendLine($"PathID {objectInfo.m_PathID}")
-                                .Append(e);
-                            Logger.Warning(sb.ToString());
-                        }
-                    }
-
-                }
             }
         }
 
@@ -173,7 +86,7 @@ namespace AssetStudio_WebAdaptor
         }
 
         public byte[] ExtractResource(string containerPath, long key, ClassIDType type)
-        { 
+        {
             var assetsFile = AssetsFileList.FirstOrDefault(f => f.fullName == containerPath);
             if (assetsFile == null)
             {
@@ -231,5 +144,41 @@ namespace AssetStudio_WebAdaptor
 
             return data;
         }
+
+        internal static class ModuleInitializer
+        {
+
+            [ModuleInitializer]
+            internal static void AntiTrim()
+            {
+                // This code is now guaranteed to run when the assembly loads.
+                Logger.Debug("AntiTrim Initializer Running!");
+                _ = AntiTrimJsonContext.Default;
+                _ = new Texture2D();
+                _ = new AnimationClip();
+                _ = new Material();
+                _ = new Texture2DArray();
+                _ = new GLTextureSettings();
+                _ = new QuaternionCurve();
+            }
+        }
+    }
+
+    [JsonSerializable(typeof(Texture2D))]
+    [JsonSerializable(typeof(Texture2DArray))]
+    [JsonSerializable(typeof(AnimationClip))]
+    [JsonSerializable(typeof(Material))]
+    [JsonSerializable(typeof(QuaternionCurve))]
+    [JsonSerializable(typeof(GLTextureSettings))]
+    // Add any other types that might be serialized
+    [JsonSourceGenerationOptions(
+        PropertyNameCaseInsensitive = true,
+        IncludeFields = true,
+        DefaultIgnoreCondition = JsonIgnoreCondition.Never
+    )]
+    public partial class AntiTrimJsonContext : JsonSerializerContext
+    {
+        // This class body is intentionally empty!
+        // The source generator fills in the rest automatically
     }
 }
