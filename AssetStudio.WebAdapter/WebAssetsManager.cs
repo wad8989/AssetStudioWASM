@@ -144,24 +144,6 @@ namespace AssetStudio_WebAdaptor
 
             return data;
         }
-
-        internal static class ModuleInitializer
-        {
-
-            [ModuleInitializer]
-            internal static void AntiTrim()
-            {
-                // This code is now guaranteed to run when the assembly loads.
-                Logger.Debug("AntiTrim Initializer Running!");
-                _ = AntiTrimJsonContext.Default;
-                _ = new Texture2D();
-                _ = new AnimationClip();
-                _ = new Material();
-                _ = new Texture2DArray();
-                _ = new GLTextureSettings();
-                _ = new QuaternionCurve();
-            }
-        }
     }
 
     [JsonSerializable(typeof(Texture2D))]
@@ -178,6 +160,19 @@ namespace AssetStudio_WebAdaptor
     )]
     public partial class AntiTrimJsonContext : JsonSerializerContext
     {
+        [ModuleInitializer]
+        internal static void AntiTrim()
+        {
+            // This code is now guaranteed to run when the assembly loads.
+            Logger.Debug("AntiTrim Initializer Running!");
+            _ = AntiTrimJsonContext.Default;
+            _ = new Texture2D();
+            _ = new AnimationClip();
+            _ = new Material();
+            _ = new Texture2DArray();
+            _ = new GLTextureSettings();
+            _ = new QuaternionCurve();
+        }
         // This class body is intentionally empty!
         // The source generator fills in the rest automatically
     }
