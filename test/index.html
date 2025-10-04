@@ -46,7 +46,7 @@
 
             var initURL = urlParams.get('url') ?? "test";
             // Load a test next to index.html as a quick sample, if you put it there
-            LoadURL(initURL).then(() => Extract(assets[0]));
+            LoadURL(initURL);
         });
     </script>
 
@@ -294,6 +294,7 @@
             } catch (e) {
                 console.error(e);
             }
+            if (!url) return;
             
             const content = document.getElementById('preview-content');
             content.innerHTML = '';

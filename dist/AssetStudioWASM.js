@@ -29,16 +29,24 @@ AssetStudioWASM.ListAllAssets = function() {
     return JSON.parse(this.__proto__.ListAllAssets());
 }
 AssetStudioWASM.ExtractAssetResource = function(asset) {
-    let data = this.__proto__.ExtractAssetResource(JSON.stringify(asset));
-    let mimeType = "application/octet-stream";
-    switch (asset.type) {
-        case "Texture2D":   mimeType = "image/x-unknown"; break;
-        case "AudioClip":   mimeType = "audio/x-unknown"; break;
-        case "VideoClip":   mimeType = "video/x-unknown"; break;
-        case "TextAsset":   mimeType = "text/plain"; break;
-        case "Font":        mimeType = "font/x-unknown"; break;
+    try {
+        let data = this.__proto__.ExtractAssetResource(JSON.stringify(asset));
+        if (data) {
+            let mimeType = "application/octet-stream";
+            switch (asset.type) {
+                case "Texture2D":   mimeType = "image/x-unknown"; break;
+                case "AudioClip":   mimeType = "audio/x-unknown"; break;
+                case "VideoClip":   mimeType = "video/x-unknown"; break;
+                case "TextAsset":   mimeType = "text/plain"; break;
+                case "Font":        mimeType = "font/x-unknown"; break;
+            }
+            console.log(new Blob([data]));
+            return URL.createObjectURL(new Blob([data], {type: mimeType}));
+        }
+    } catch (e) {
+        console.error(e);
     }
-    return URL.createObjectURL(new Blob([data], {type: mimeType}));
+    return null;
 }
 
 window.AssetStudioWASM = AssetStudioWASM;
