@@ -69,6 +69,23 @@
                     "cwd": "${workspaceFolder}"
                 },
                 "dependsOn": "Build WASM - Publish"
+            },
+            {
+                "label": "Clean",
+                "type": "shell",
+                "command": "dotnet clean && rm -rf \"${workspaceFolder}/AssetStudio.WebAdapter/bin\" \"${workspaceFolder}/AssetStudio.WebAdapter/obj\" \"${workspaceFolder}/Texture2DDecoderNative.WebAdapter/build\"",
+                "windows": {
+                    "command": "dotnet clean ; rm -r -Force -Path \"${workspaceFolder}\\AssetStudio.WebAdapter\\bin\", \"${workspaceFolder}\\AssetStudio.WebAdapter\\obj\", \"${workspaceFolder}\\Texture2DDecoderNative.WebAdapter\\build\""
+                },
+                "group": {
+                    "kind": "build"
+                },
+                "presentation": {
+                    "reveal": "always",
+                    "panel": "shared"
+                },
+                "problemMatcher": [],
+                "detail": "Runs 'dotnet clean' followed by manual forced removal of specific bin, obj, and build directories."
             }
         ],
         "inputs": [
@@ -94,19 +111,6 @@
                 "internalConsoleOptions": "neverOpen"
             },
             {
-                "name": "Build & Test WASM",
-                "type": "coreclr",
-                "request": "launch",
-                "preLaunchTask": "Build WASM - Publish & Copy to dist",
-                "cwd": "${workspaceFolder}",
-                "program": "dotnet",
-                "args": [
-                    "serve",
-                    "--directory",
-                    "test"
-                ]
-            },
-            {
                 "name": "Test WASM (No Rebuild)",
                 "type": "coreclr",
                 "request": "launch",
@@ -117,7 +121,16 @@
                     "--directory",
                     "test"
                 ]
-            }
+            },
+            {
+                "name": "Clean",
+                "type": "coreclr",
+                "request": "launch",
+                "preLaunchTask": "Clean",
+                "cwd": "${workspaceFolder}",
+                "program": "dotnet",
+                "internalConsoleOptions": "neverOpen"
+            },
         ]
     }
 }
