@@ -105,7 +105,7 @@
                 "name": "Build WASM",
                 "type": "coreclr",
                 "request": "launch",
-                "preLaunchTask": "Build WASM - Publish & Copy to dist",
+                "preLaunchTask": "Build WASM - Publish",
                 "cwd": "${workspaceFolder}",
                 "program": "dotnet",
                 "internalConsoleOptions": "neverOpen"

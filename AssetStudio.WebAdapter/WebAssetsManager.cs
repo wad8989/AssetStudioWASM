@@ -2,8 +2,10 @@ using AssetStudio;
 using System;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices.JavaScript;
 using System.Text;
 using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 
 namespace AssetStudio_WebAdaptor
 {
@@ -15,8 +17,23 @@ namespace AssetStudio_WebAdaptor
 
         public WebAssetsManager()
         {
-            var logger = new WebLogger();
-            Logger.Default = logger;
+            {
+                var logger = new WebLogger();
+                Logger.Default = logger;
+            }
+            
+            {
+                // Import the bridge module BEFORE any texture decoder calls
+                _ = Task.Run(() =>
+                {
+#pragma warning disable CA1416 // Validate platform compatibility
+                    JSHost.ImportAsync(
+                        "Texture2DDecoderNative.ImportBridge",
+                        "./Texture2DDecoderNative.ImportBridge.js"
+                    ).Wait();
+#pragma warning restore CA1416 // Validate platform compatibility
+                });
+            }
         }
 
         public void LoadFile(FileReader reader)
