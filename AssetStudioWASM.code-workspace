@@ -73,9 +73,9 @@
             {
                 "label": "Clean",
                 "type": "shell",
-                "command": "dotnet clean && rm -rf \"${workspaceFolder}/AssetStudio.WebAdapter/bin\" \"${workspaceFolder}/AssetStudio.WebAdapter/obj\" \"${workspaceFolder}/Texture2DDecoderNative.WebAdapter/build\"",
+                "command": "dotnet clean && rm -rf \"${workspaceFolder}/AssetStudio.WebAdapter/bin\" \"${workspaceFolder}/AssetStudio.WebAdapter/obj\" \"${workspaceFolder}/Texture2DDecoderNative.WebAdapter/build\" \"${workspaceFolder}/Texture2DDecoderNative.ImportBridge/build\"",
                 "windows": {
-                    "command": "dotnet clean ; rm -r -Force -Path \"${workspaceFolder}\\AssetStudio.WebAdapter\\bin\", \"${workspaceFolder}\\AssetStudio.WebAdapter\\obj\", \"${workspaceFolder}\\Texture2DDecoderNative.WebAdapter\\build\""
+                    "command": "dotnet clean ; rm -r -Force -Path \"${workspaceFolder}\\AssetStudio.WebAdapter\\bin\", \"${workspaceFolder}\\AssetStudio.WebAdapter\\obj\", \"${workspaceFolder}\\Texture2DDecoderNative.WebAdapter\\build\", \"${workspaceFolder}\\Texture2DDecoderNative.ImportBridge\\bin\""
                 },
                 "group": {
                     "kind": "build"

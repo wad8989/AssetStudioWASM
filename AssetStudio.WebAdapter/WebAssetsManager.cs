@@ -113,7 +113,8 @@ namespace AssetStudio_WebAdaptor
             switch (obj)
             {
                 case Texture2D m_Texture2D:
-                    data = m_Texture2D.image_data.GetData();
+                    // data = m_Texture2D.image_data.GetData();
+                    data = m_Texture2D.ConvertToStream(ImageFormat.Png, true).GetBuffer();
                     break;
                 case AudioClip m_AudioClip:
                     data = m_AudioClip.m_AudioData.GetData();

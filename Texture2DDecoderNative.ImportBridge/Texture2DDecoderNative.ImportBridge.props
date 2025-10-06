@@ -1,0 +1,12 @@
+<!-- Texture2DDecoderNative.ImportBridge.props -->
+<Project>
+  <PropertyGroup>
+    <ImportBridgeProjectDir>$(MSBuildThisFileDirectory)</ImportBridgeProjectDir>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(RuntimeIdentifier)' == 'browser-wasm'">
+    <WasmExtraFilesToDeploy Include="$(ImportBridgeProjectDir)Texture2DDecoderNative.ImportBridge.js" />
+    <WasmExtraFilesToDeploy Include="$(ImportBridgeProjectDir)..\Texture2DDecoderNative.WebAdapter\build\Texture2DDecoderNative.WebAdapter.js" />
+    <WasmExtraFilesToDeploy Include="$(ImportBridgeProjectDir)..\Texture2DDecoderNative.WebAdapter\build\Texture2DDecoderNative.WebAdapter.wasm" />
+  </ItemGroup>
+</Project>

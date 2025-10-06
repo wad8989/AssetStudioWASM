@@ -25,7 +25,20 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AssetStudio\AssetStudio\AssetStudio.csproj" />
+    <ProjectReference Include="..\AssetStudio\AssetStudioUtility\AssetStudioUtility.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <!-- Block the package from being restored -->
+    <PackageReference Include="Kyaru.Texture2DDecoder" Version="0.17.0">
+      <PrivateAssets>all</PrivateAssets>
+      <ExcludeAssets>all</ExcludeAssets>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Texture2DDecoderNative.ImportBridge\Texture2DDecoderNative.ImportBridge.csproj" />
+  </ItemGroup>
+  <Import Project="..\Texture2DDecoderNative.ImportBridge\Texture2DDecoderNative.ImportBridge.props" />
 
   <ItemGroup>
     <PackageReference Include="System.Text.Json" Version="9.0.0-preview.6.24327.7" />
@@ -33,24 +46,6 @@
   
   <ItemGroup>
     <TrimmerRootDescriptor Include="linker.xml" />
-  </ItemGroup>
-
-  <Target Name="Build:Texture2DDecoderNativeWASM" BeforeTargets="Build">
-    <Exec Command="if not exist build mkdir build"
-          WorkingDirectory="$(ProjectDir)\..\Texture2DDecoderNative.WebAdapter" />
-    <Exec Command="emcmake cmake .."
-          WorkingDirectory="$(ProjectDir)\..\Texture2DDecoderNative.WebAdapter\build" />
-    <Exec Command="emmake make"
-          WorkingDirectory="$(ProjectDir)\..\Texture2DDecoderNative.WebAdapter\build" />
-  </Target>
-
-  <ItemGroup>
-    <!-- Include the JS wrapper -->
-    <!-- <WasmExtraFilesToDeploy Include="texture-decoder.js" /> -->
-    
-    <!-- Copy your WASM files from the build output -->
-    <WasmExtraFilesToDeploy Include="$(ProjectDir)\..\Texture2DDecoderNative.WebAdapter\build\Texture2DDecoderNative.WebAdapter.wasm" />
-    <WasmExtraFilesToDeploy Include="$(ProjectDir)\..\Texture2DDecoderNative.WebAdapter\build\Texture2DDecoderNative.WebAdapter.js" />
   </ItemGroup>
 
 </Project>
