@@ -31,52 +31,9 @@
                 }
             },
             {
-                "label": "Build WASM - Publish & Copy to dist",
-                "type": "shell",
-                "windows": {
-                    "command": "xcopy",
-                    "args": [
-                        "${workspaceFolder}\\AssetStudio.WebAdapter\\bin\\${input:buildConfig}\\net8.0\\browser-wasm\\AppBundle",
-                        "${workspaceFolder}\\dist\\AppBundle",
-                        "/E",
-                        "/I",
-                        "/Y"
-                    ]
-                },
-                "linux": {
-                    "command": "cp",
-                    "args": [
-                        "-r",
-                        "${workspaceFolder}/AssetStudio.WebAdapter/bin/${input:buildConfig}/net8.0/browser-wasm/AppBundle",
-                        "${workspaceFolder}/dist/AppBundle"
-                    ]
-                },
-                "osx": {
-                    "command": "cp",
-                    "args": [
-                        "-r",
-                        "${workspaceFolder}/AssetStudio.WebAdapter/bin/${input:buildConfig}/net8.0/browser-wasm/AppBundle",
-                        "${workspaceFolder}/dist/AppBundle"
-                    ]
-                },
-                "group": "build",
-                "problemMatcher": [],
-                "presentation": {
-                    "reveal": "always",
-                    "panel": "shared"
-                },
-                "options": {
-                    "cwd": "${workspaceFolder}"
-                },
-                "dependsOn": "Build WASM - Publish"
-            },
-            {
                 "label": "Clean",
                 "type": "shell",
-                "command": "dotnet clean && rm -rf \"${workspaceFolder}/AssetStudio.WebAdapter/bin\" \"${workspaceFolder}/AssetStudio.WebAdapter/obj\" \"${workspaceFolder}/Texture2DDecoderNative.WebAdapter/build\" \"${workspaceFolder}/Texture2DDecoderNative.ImportBridge/build\"",
-                "windows": {
-                    "command": "dotnet clean ; rm -r -Force -Path \"${workspaceFolder}\\AssetStudio.WebAdapter\\bin\", \"${workspaceFolder}\\AssetStudio.WebAdapter\\obj\", \"${workspaceFolder}\\Texture2DDecoderNative.WebAdapter\\build\", \"${workspaceFolder}\\Texture2DDecoderNative.ImportBridge\\bin\""
-                },
+                "command": "dotnet clean",
                 "group": {
                     "kind": "build"
                 },

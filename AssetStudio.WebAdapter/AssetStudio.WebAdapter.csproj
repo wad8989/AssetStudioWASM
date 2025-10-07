@@ -62,5 +62,11 @@
     <Copy SourceFiles="@(AppBundleFiles)" DestinationFolder="$(ProjectDir)..\dist\AppBundle\%(RecursiveDir)" SkipUnchangedFiles="false" />
     <Message Text="Copied AppBundle" Importance="High" />
   </Target>
+  
+  <Target Name="Clean:Dist" AfterTargets="Clean">
+    <RemoveDir Directories="$(ProjectDir)\..\dist\AppBundle" />
+    <RemoveDir Directories="$(ProjectDir)\bin" />
+    <RemoveDir Directories="$(ProjectDir)\obj" />
+  </Target>
 
 </Project>

@@ -14,5 +14,10 @@
           WorkingDirectory="$(ProjectDir)\..\Texture2DDecoderNative.WebAdapter\build" />
   </Target>
 
+  <Target Name="Clean:Dist" AfterTargets="Clean">
+    <RemoveDir Directories="$(ProjectDir)\..\Texture2DDecoderNative.WebAdapter\build" />
+    <RemoveDir Directories="$(ProjectDir)\bin" />
+    <RemoveDir Directories="$(ProjectDir)\obj" />
+  </Target>
 
 </Project>
