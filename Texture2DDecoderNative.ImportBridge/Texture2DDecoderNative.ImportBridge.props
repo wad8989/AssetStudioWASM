@@ -1,8 +1,0 @@
-<Project>
-    <ItemGroup>
-      <Texture2DDecoderNativeDeploy Include="$(MSBuildProjectDirectory)\..\Texture2DDecoderNative.WebAdapter\build\Texture2DDecoderNative.WebAdapter.wasm" />
-      <Texture2DDecoderNativeDeploy Include="$(MSBuildProjectDirectory)\..\Texture2DDecoderNative.WebAdapter\build\Texture2DDecoderNative.WebAdapter.js" />
-      
-      <Texture2DDecoderNativeDeploy Include="$(MSBuildProjectDirectory)\..\Texture2DDecoderNative.ImportBridge\Texture2DDecoderNative.ImportBridge.js" />
-    </ItemGroup>
-</Project>

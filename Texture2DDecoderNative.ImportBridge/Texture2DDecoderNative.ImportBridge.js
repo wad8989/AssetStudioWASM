@@ -1,12 +1,6 @@
-import './Texture2DDecoderNative.WebAdapter.js';
+import createModule from './Texture2DDecoderNative.WebAdapter.js';
 
-await new Promise(resolve => {
-    if (typeof Module !== 'undefined' && Module.calledRun) {
-        resolve();
-    } else {
-        Module.onRuntimeInitialized = resolve;
-    }
-});
+const Module = await createModule();
 
 export const { 
     _DecodeDXT1,
@@ -32,6 +26,9 @@ export const {
     _DisposeBuffer,
     _malloc,
     _free,
+    __emscripten_stack_restore,
+    __emscripten_stack_alloc,
+    _emscripten_stack_get_current,
     HEAPU8,
     HEAP32
 } = Module;

@@ -35,17 +35,15 @@
       <ExcludeAssets>all</ExcludeAssets>
     </PackageReference>
   </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\Texture2DDecoderNative.ImportBridge\Texture2DDecoderNative.ImportBridge.csproj" />
   </ItemGroup>
-  <Import Project="..\Texture2DDecoderNative.ImportBridge\Texture2DDecoderNative.ImportBridge.props" />
-  
-  <Target Name="Copy:Texture2DDecoderNativeDeploy" AfterTargets="AfterResolveReferences">
-    <Copy 
-      SourceFiles="@(Texture2DDecoderNativeDeploy)" 
-      DestinationFolder="$(OutputPath)AppBundle\_framework" />
-    <Message Text="Copied Texture2DDecoderNative To AppBundle" Importance="High" />
-  </Target>
+  <ItemGroup Condition="$(_WasmIsPublishing) == true">
+    <WasmExtraFilesToDeploy  Include="$(ProjectDir)\..\Texture2DDecoderNative.WebAdapter\build\Texture2DDecoderNative.WebAdapter.wasm" TargetPath="$(WasmRuntimeAssetsLocation)\Texture2DDecoderNative.WebAdapter.wasm" />
+    <WasmExtraFilesToDeploy  Include="$(ProjectDir)\..\Texture2DDecoderNative.WebAdapter\build\Texture2DDecoderNative.WebAdapter.js" TargetPath="$(WasmRuntimeAssetsLocation)\Texture2DDecoderNative.WebAdapter.js" />
+    <WasmExtraFilesToDeploy  Include="$(ProjectDir)\..\Texture2DDecoderNative.ImportBridge\Texture2DDecoderNative.ImportBridge.js" TargetPath="$(WasmRuntimeAssetsLocation)\Texture2DDecoderNative.ImportBridge.js" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="System.Text.Json" Version="9.0.0-preview.6.24327.7" />
@@ -55,7 +53,7 @@
     <TrimmerRootDescriptor Include="linker.xml" />
   </ItemGroup>
 
-  <Target Name="Deploy:Dist" AfterTargets="AfterResolveReferences;Copy:Texture2DDecoderNativeDeploy">
+  <Target Name="Deploy:Dist" AfterTargets="_AfterWasmBuildApp">
     <ItemGroup>
       <AppBundleFiles Include="$(OutputPath)\AppBundle\**\*.*" />
     </ItemGroup>

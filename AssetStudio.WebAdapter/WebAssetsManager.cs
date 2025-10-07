@@ -17,23 +17,38 @@ namespace AssetStudio_WebAdaptor
 
         public WebAssetsManager()
         {
+            InitLogger();
+            InitJSImport();
+        }
+
+        private static void InitLogger()
+        {
+            var logger = new WebLogger();
+            Logger.Default = logger;
+        }
+        private static void InitJSImport()
+        {
+            // Import the bridge module BEFORE any texture decoder calls
+            _ = Task.Run(() =>
             {
-                var logger = new WebLogger();
-                Logger.Default = logger;
-            }
-            
-            {
-                // Import the bridge module BEFORE any texture decoder calls
-                _ = Task.Run(() =>
-                {
+                Logger.Debug($"d223.1");
 #pragma warning disable CA1416 // Validate platform compatibility
-                    JSHost.ImportAsync(
-                        "Texture2DDecoderNative.ImportBridge",
-                        "./Texture2DDecoderNative.ImportBridge.js"
-                    ).Wait();
-#pragma warning restore CA1416 // Validate platform compatibility
+                JSHost.ImportAsync(
+                    "Texture2DDecoderNative.ImportBridge",
+                    "./Texture2DDecoderNative.ImportBridge.js"
+                )
+                .ContinueWith(t =>
+                {
+                    if (t.IsFaulted)
+                    {
+                        Logger.Error($"JSHost.ImportAsync Failed: {t.Exception.Message}");
+                    }
+                    Logger.Debug($"JSHost.ImportAsync Result: {t.Result.ToString()}");
                 });
-            }
+#pragma warning restore CA1416 // Validate platform compatibility
+                Logger.Debug($"d223.2");
+            });
+            Logger.Debug($"d223.3");
         }
 
         public void LoadFile(FileReader reader)
