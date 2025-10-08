@@ -43,7 +43,17 @@
                 },
                 "problemMatcher": [],
                 "detail": "Runs 'dotnet clean' followed by manual forced removal of specific bin, obj, and build directories."
-            }
+            },
+            {
+                "label": "Rebuild",
+                "dependsOn": [
+                    "Clean",
+                    "Build WASM - Publish"
+                ],
+                "problemMatcher": ["$msCompile"],
+                "group": "build",
+                "detail": "Runs Clean & Build WASM - Publish."
+            },
         ],
         "inputs": [
             {
@@ -63,6 +73,15 @@
                 "type": "coreclr",
                 "request": "launch",
                 "preLaunchTask": "Build WASM - Publish",
+                "cwd": "${workspaceFolder}",
+                "program": "dotnet",
+                "internalConsoleOptions": "neverOpen"
+            },
+            {
+                "name": "Rebuild WASM",
+                "type": "coreclr",
+                "request": "launch",
+                "preLaunchTask": "Rebuild",
                 "cwd": "${workspaceFolder}",
                 "program": "dotnet",
                 "internalConsoleOptions": "neverOpen"
