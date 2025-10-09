@@ -15,12 +15,12 @@
     <JsonSerializerIsReflectionEnabledByDefault>true</JsonSerializerIsReflectionEnabledByDefault>
     <UseSystemTextJsonSourceGeneration>true</UseSystemTextJsonSourceGeneration>
   </PropertyGroup>
-  <PropertyGroup>
-    <WasmIncludeFullIcuData>false</WasmIncludeFullIcuData>
-    <InvariantGlobalization>true</InvariantGlobalization>
-    <WasmStripILAfterAOT>false</WasmStripILAfterAOT>
-    <MonoRuntimeDebuggerEnabled>true</MonoRuntimeDebuggerEnabled>
-    <WasmEmitSymbolMap>true</WasmEmitSymbolMap>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <RunAOTCompilation>false</RunAOTCompilation>
+    <PublishTrimmed>false</PublishTrimmed>
+    <InvariantGlobalization>false</InvariantGlobalization>
+    <CopyDebugSymbols>true</CopyDebugSymbols>
+    <DebuggerSupport>true</DebuggerSupport>
   </PropertyGroup>
 
   <ItemGroup>

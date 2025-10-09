@@ -5,6 +5,8 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssetStudio.WebAdapter", "AssetStudio.WebAdapter\AssetStudio.WebAdapter.csproj", "{DDB4B71E-5262-4557-AA82-680B0FB61731}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Texture2DDecoderNative.ImportBridge", "Texture2DDecoderNative.ImportBridge\Texture2DDecoderNative.ImportBridge.csproj", "{C88D7CE2-8C81-4BE2-BEFE-36641F0AFE0C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,18 @@ Global
 		{DDB4B71E-5262-4557-AA82-680B0FB61731}.Release|x64.Build.0 = Release|Any CPU
 		{DDB4B71E-5262-4557-AA82-680B0FB61731}.Release|x86.ActiveCfg = Release|Any CPU
 		{DDB4B71E-5262-4557-AA82-680B0FB61731}.Release|x86.Build.0 = Release|Any CPU
+		{C88D7CE2-8C81-4BE2-BEFE-36641F0AFE0C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C88D7CE2-8C81-4BE2-BEFE-36641F0AFE0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C88D7CE2-8C81-4BE2-BEFE-36641F0AFE0C}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{C88D7CE2-8C81-4BE2-BEFE-36641F0AFE0C}.Debug|x64.Build.0 = Debug|Any CPU
+		{C88D7CE2-8C81-4BE2-BEFE-36641F0AFE0C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C88D7CE2-8C81-4BE2-BEFE-36641F0AFE0C}.Debug|x86.Build.0 = Debug|Any CPU
+		{C88D7CE2-8C81-4BE2-BEFE-36641F0AFE0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C88D7CE2-8C81-4BE2-BEFE-36641F0AFE0C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C88D7CE2-8C81-4BE2-BEFE-36641F0AFE0C}.Release|x64.ActiveCfg = Release|Any CPU
+		{C88D7CE2-8C81-4BE2-BEFE-36641F0AFE0C}.Release|x64.Build.0 = Release|Any CPU
+		{C88D7CE2-8C81-4BE2-BEFE-36641F0AFE0C}.Release|x86.ActiveCfg = Release|Any CPU
+		{C88D7CE2-8C81-4BE2-BEFE-36641F0AFE0C}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
