@@ -8,8 +8,10 @@
 
 
     <!-- TUTORIAL -->
-    <script type="module" src="dist/AssetStudioWASM.js"></script>
-    <script type="text/javascript" id="TUTORIAL">
+    <!-- <script type="module" src="dist/AssetStudioWASM.js"></script> -->
+    <!-- <script type="text/javascript" id="TUTORIAL"> -->
+    <script type="module" id="TUTORIAL">
+        import "./dist/AssetStudioWASM.js";
         //TUTORIAL: Asset Studio WASM Use Example
 
         function LoadURL(filepath) {
@@ -34,7 +36,8 @@
             console.log(asset.url);
         }
 
-        window.addEventListener("AssetStudioWASM.loaded", e => {
+        //REMARKS: "AssetStudioWASM.loaded" for "script src" import only
+        // window.addEventListener("AssetStudioWASM.loaded", e => {
             const urlParams = new URLSearchParams(window.location.search);
 
             const unityVersion = urlParams.get('unity_version');
@@ -47,7 +50,7 @@
             var initURL = urlParams.get('url') ?? "test";
             // Load a test next to index.html as a quick sample, if you put it there
             LoadURL(initURL);
-        });
+        // });
     </script>
 
 
