@@ -154,8 +154,8 @@ namespace AssetStudio_WebAdaptor
                 case VideoClip m_VideoClip:
                     data = m_VideoClip.m_VideoData.GetData();
                     break;
-                case TextAsset m_Text:
-                    data = Encoding.UTF8.GetBytes(m_Text.Dump());
+                case TextAsset m_TextAsset:
+                    data = m_TextAsset.m_Script;
                     break;
                 case Font m_Font:
                     if (m_Font.m_FontData != null)
