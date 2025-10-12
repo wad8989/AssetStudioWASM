@@ -61,6 +61,12 @@ Before building or contributing, make sure you have:
 
 
 
+### Update Remarks
+If I was too lazy to update to catch up with `aelurum/AssetStudio` in the future, you can pull the sub-repo yourself.
+
+I did not touch any code from them.
+As long as the APIs used and reflected are still the same, it could still works.
+
 ## Usage
 
 **Step 1. Import `dist/AssetStudioWASM.js`**
