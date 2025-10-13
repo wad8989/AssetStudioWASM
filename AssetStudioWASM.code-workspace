@@ -50,6 +50,7 @@
                     "Clean",
                     "Build WASM - Publish"
                 ],
+                "dependsOrder": "sequence",
                 "problemMatcher": ["$msCompile"],
                 "group": "build",
                 "detail": "Runs Clean & Build WASM - Publish."

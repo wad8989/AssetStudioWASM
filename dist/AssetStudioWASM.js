@@ -39,6 +39,7 @@ AssetStudioWASM.ExtractAssetResource = function(asset) {
                 case "VideoClip":   mimeType = "video/x-unknown"; break;
                 case "TextAsset":   mimeType = "text/plain"; break;
                 case "Font":        mimeType = "font/x-unknown"; break;
+                case "MonoBehaviour":   mimeType = "text/json"; break;
             }
             console.log(new Blob([data]));
             return URL.createObjectURL(new Blob([data], {type: mimeType}));

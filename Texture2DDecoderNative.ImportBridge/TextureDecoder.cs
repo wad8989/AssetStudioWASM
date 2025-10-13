@@ -1,7 +1,5 @@
 using System;
-using System.Linq;
 using System.Runtime.InteropServices.JavaScript;
-using System.Runtime.InteropServices;
 
 namespace Texture2DDecoder
 {

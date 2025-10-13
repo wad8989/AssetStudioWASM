@@ -30,15 +30,6 @@ namespace AssetStudio_WebAdaptor
             writer.WriteEndArray();
         }
 
-        private static string LoadFile_CreateReturnJson()
-        {
-            using var memoryStream = new MemoryStream();
-            using var writer = new Utf8JsonWriter(memoryStream);
-
-
-            return Encoding.UTF8.GetString(memoryStream.ToArray());
-        }
-
         // This method is the core logic. It accepts a byte array (the file content) and a filename.
         // It's decorated with [JSExport] to make it callable from JavaScript environments.
         [JSExport]
@@ -100,6 +91,10 @@ namespace AssetStudio_WebAdaptor
                     else if (asset is NamedObject namedObject)
                     {
                         name = namedObject.m_Name;
+                    }
+                    else if (asset is MonoBehaviour m)
+                    {
+                        name = $"{(m.m_Name.Length > 0 ? (m.m_Name + ":") : "")}{name}";
                     }
 
                     assets.Add(new AssetInfo
