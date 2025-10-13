@@ -76,7 +76,8 @@
             z-index: 100;
         }
         
-        #preview .card-content .card-title {
+        .card-content .card-title {
+            word-wrap: break-word;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -310,7 +311,9 @@
                     }
                     return hex.trim();
                 }
-                fetch(url).then(r => r.arrayBuffer()).then(buffer => {
+                fetch(url)
+                .then(r => r.arrayBuffer())
+                .then(buffer => {
                     const bytes = new Uint8Array(buffer);
                     const div = document.createElement('div');
                     div.textContent = 'Preview failed, showing hex dump:';
@@ -346,6 +349,7 @@
                     elem.onerror = errorDump;
                     break;
                 case 'TextAsset':
+                case 'MonoBehaviour':
                     fetch(url).then(r => r.text()).then(text => {
                         const pre = document.createElement('pre');
                         pre.textContent = text;
@@ -370,7 +374,7 @@
                 default:
                     elem = document.createElement('div');
                     elem.textContent = 'Unsupported asset type';
-                    sender.textContent = 'Preview Unsupported';
+                    sender.textContent = 'Preview Unsupported'+'\n'+errorDump();
                     sender.onclick = null;
             }
             if (elem) content.appendChild(elem);

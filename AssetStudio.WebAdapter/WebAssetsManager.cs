@@ -159,12 +159,18 @@ namespace AssetStudio_WebAdaptor
                     break;
                 case MonoBehaviour m_MonoBehaviour:
                     {
-                        var obj2 = m_MonoBehaviour.ToType();
-                        if (obj2 == null)
+                        var jsonDoc = m_MonoBehaviour.ToJsonDoc();
+                        Logger.Debug($"D12.1: {jsonDoc}");
+                        if (jsonDoc == null)
                         {
+                            Logger.Debug($"D12.2.1: {jsonDoc}");
                             var typeTree = m_MonoBehaviour.ConvertToTypeTree(new AssemblyLoader());
-                            data = Encoding.UTF8.GetBytes(m_MonoBehaviour.ToJsonDoc(typeTree).ToString());
+                            Logger.Debug($"D12.2.2: {typeTree}");
+                            jsonDoc = m_MonoBehaviour.ToJsonDoc(typeTree);
+                            Logger.Debug($"D12.2.3: {jsonDoc}");
                         }
+                        Logger.Debug($"D12.3: {jsonDoc.RootElement.GetRawText()}");
+                        data = Encoding.UTF8.GetBytes(jsonDoc.RootElement.GetRawText());
                     }
                     
                     break;
