@@ -157,6 +157,17 @@ namespace AssetStudio_WebAdaptor
                 case TextAsset m_TextAsset:
                     data = m_TextAsset.m_Script;
                     break;
+                case MonoBehaviour m_MonoBehaviour:
+                    {
+                        var obj2 = m_MonoBehaviour.ToType();
+                        if (obj2 == null)
+                        {
+                            var typeTree = m_MonoBehaviour.ConvertToTypeTree(new AssemblyLoader());
+                            data = Encoding.UTF8.GetBytes(m_MonoBehaviour.ToJsonDoc(typeTree).ToString());
+                        }
+                    }
+                    
+                    break;
                 case Font m_Font:
                     if (m_Font.m_FontData != null)
                     {

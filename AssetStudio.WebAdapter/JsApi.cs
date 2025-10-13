@@ -101,6 +101,10 @@ namespace AssetStudio_WebAdaptor
                     {
                         name = namedObject.m_Name;
                     }
+                    else if (asset is MonoBehaviour m)
+                    {
+                        name = $"{(m.m_Name.Length > 0 ? (m.m_Name + ":") : "")}{name}";
+                    }
 
                     assets.Add(new AssetInfo
                     {

@@ -201,7 +201,7 @@
             
         document.getElementById('filter-controls').style.display = 'none';
         
-        const previewableTypes = ['Texture2D', 'AudioClip', 'VideoClip', 'TextAsset', 'Font'];
+        const previewableTypes = ['Texture2D', 'AudioClip', 'VideoClip', 'TextAsset', 'Font', 'MonoBehaviour'];
         
         /**
          * Processes newly loaded assets, creates filters, and triggers the first render.
@@ -273,7 +273,7 @@
                 a.onclick = (e) => { e.preventDefault(); previewAsset(asset, a); };
                 action.appendChild(a);
                 if (!previewableTypes.includes(asset.type)) {
-                    a.style.display = 'none';
+                    a.style.opacity = 0.3;
                 }
                 card.appendChild(content);
                 card.appendChild(action);
