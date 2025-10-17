@@ -31,7 +31,6 @@ namespace AssetStudio_WebAdaptor
             // Import the bridge module BEFORE any texture decoder calls
             _ = Task.Run(() =>
             {
-                Logger.Debug($"d223.1");
 #pragma warning disable CA1416 // Validate platform compatibility
                 JSHost.ImportAsync(
                     "Texture2DDecoderNative.ImportBridge",
@@ -46,9 +45,7 @@ namespace AssetStudio_WebAdaptor
                     Logger.Debug($"JSHost.ImportAsync Result: {t.Result.ToString()}");
                 });
 #pragma warning restore CA1416 // Validate platform compatibility
-                Logger.Debug($"d223.2");
             });
-            Logger.Debug($"d223.3");
         }
 
         public void LoadFile(FileReader reader)
@@ -160,16 +157,11 @@ namespace AssetStudio_WebAdaptor
                 case MonoBehaviour m_MonoBehaviour:
                     {
                         var jsonDoc = m_MonoBehaviour.ToJsonDoc();
-                        Logger.Debug($"D12.1: {jsonDoc}");
                         if (jsonDoc == null)
                         {
-                            Logger.Debug($"D12.2.1: {jsonDoc}");
                             var typeTree = m_MonoBehaviour.ConvertToTypeTree(new AssemblyLoader());
-                            Logger.Debug($"D12.2.2: {typeTree}");
                             jsonDoc = m_MonoBehaviour.ToJsonDoc(typeTree);
-                            Logger.Debug($"D12.2.3: {jsonDoc}");
                         }
-                        Logger.Debug($"D12.3: {jsonDoc.RootElement.GetRawText()}");
                         data = Encoding.UTF8.GetBytes(jsonDoc.RootElement.GetRawText());
                     }
                     

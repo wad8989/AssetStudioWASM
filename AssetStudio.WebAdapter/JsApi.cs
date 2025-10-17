@@ -79,11 +79,10 @@ namespace AssetStudio_WebAdaptor
                     var asset = assetsFile.ObjectsDic[key];
                     if (asset == null)
                     {
-                        Logger.Debug($"Skipped {key}. asset == null");
                         continue;
                     }
 
-                    string name = $"{asset.type} #{(UInt64)key}";
+                    string name = "";
                     if (asset is GameObject gameObject)
                     {
                         name = gameObject.m_Name;
@@ -94,7 +93,7 @@ namespace AssetStudio_WebAdaptor
                     }
                     else if (asset is MonoBehaviour m)
                     {
-                        name = $"{(m.m_Name.Length > 0 ? (m.m_Name + ":") : "")}{name}";
+                        name = $"{(m.m_Name.Length > 0 ? m.m_Name : "")}";
                     }
 
                     assets.Add(new AssetInfo
