@@ -14,6 +14,8 @@ const AssetStudioWASM = {};
 
 Object.setPrototypeOf(AssetStudioWASM, dotasm.AssetStudio_WebAdaptor.JsApi);
 
+await AssetStudioWASM.InitImports();
+
 AssetStudioWASM.LoadURL = function (filepath) {
     return fetch(filepath)
         .then(async r => ({ 

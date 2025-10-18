@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Runtime.InteropServices.JavaScript;
 using System.Collections.Generic;
 using System;
+using System.Threading.Tasks;
 
 namespace AssetStudio_WebAdaptor
 {
@@ -13,6 +14,28 @@ namespace AssetStudio_WebAdaptor
     // It contains methods that can be called directly from JavaScript (via JSExport).
     public static partial class JsApi
     {
+
+        [JSExport]
+        public static async Task InitImports()
+        {
+            // Import the bridge module BEFORE any texture decoder calls
+#pragma warning disable CA1416 // Validate platform compatibility
+            await JSHost.ImportAsync(
+                "Texture2DDecoderNative.ImportBridge",
+                "./Texture2DDecoderNative.ImportBridge.js"
+            )
+            .ContinueWith(t =>
+            {
+                if (t.IsFaulted)
+                {
+                    Logger.Error($"JSHost.ImportAsync Failed: {t.Exception.Message}");
+                }
+                Logger.Debug($"JSHost.ImportAsync Result: {t.Result.ToString()}");
+            });
+#pragma warning restore CA1416 // Validate platform compatibility
+        }
+
+
         private static void writeAssetListJson(Utf8JsonWriter writer, List<AssetInfo> assets)
         {
             writer.WriteStartArray();

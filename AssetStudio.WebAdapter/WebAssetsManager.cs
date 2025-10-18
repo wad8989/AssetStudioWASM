@@ -18,34 +18,12 @@ namespace AssetStudio_WebAdaptor
         public WebAssetsManager()
         {
             InitLogger();
-            InitJSImport();
         }
 
         private static void InitLogger()
         {
             var logger = new WebLogger();
             Logger.Default = logger;
-        }
-        private static void InitJSImport()
-        {
-            // Import the bridge module BEFORE any texture decoder calls
-            _ = Task.Run(() =>
-            {
-#pragma warning disable CA1416 // Validate platform compatibility
-                JSHost.ImportAsync(
-                    "Texture2DDecoderNative.ImportBridge",
-                    "./Texture2DDecoderNative.ImportBridge.js"
-                )
-                .ContinueWith(t =>
-                {
-                    if (t.IsFaulted)
-                    {
-                        Logger.Error($"JSHost.ImportAsync Failed: {t.Exception.Message}");
-                    }
-                    Logger.Debug($"JSHost.ImportAsync Result: {t.Result.ToString()}");
-                });
-#pragma warning restore CA1416 // Validate platform compatibility
-            });
         }
 
         public void LoadFile(FileReader reader)
