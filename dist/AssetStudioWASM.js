@@ -14,8 +14,6 @@ const AssetStudioWASM = {};
 
 Object.setPrototypeOf(AssetStudioWASM, dotasm.AssetStudio_WebAdaptor.JsApi);
 
-await AssetStudioWASM.InitImports();
-
 AssetStudioWASM.LoadURL = function (filepath) {
     return fetch(filepath)
         .then(async r => ({ 
@@ -43,13 +41,17 @@ AssetStudioWASM.ExtractAssetResource = function(asset) {
                 case "Font":        mimeType = "font/x-unknown"; break;
                 case "MonoBehaviour":   mimeType = "text/json"; break;
             }
-            console.log(new Blob([data]));
             return URL.createObjectURL(new Blob([data], {type: mimeType}));
         }
     } catch (e) {
         console.error(e);
+        throw e;
     }
-    return null;
+}
+
+// Call InitImports if present (old JSImport-based assemblies need it; new NativeFileReference build won't have it)
+if (typeof AssetStudioWASM.InitImports === 'function') {
+    await AssetStudioWASM.InitImports();
 }
 
 window.AssetStudioWASM = AssetStudioWASM;

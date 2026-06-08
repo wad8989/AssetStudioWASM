@@ -39,10 +39,23 @@
   <ItemGroup>
     <ProjectReference Include="..\Texture2DDecoderNative.ImportBridge\Texture2DDecoderNative.ImportBridge.csproj" />
   </ItemGroup>
+  <!-- C++ texture decoder sources compiled directly into dotnet.native.wasm via NativeFileReference.
+       EmccFlags is appended to _EmccCommonFlags which feeds the link-step command; emcc compiles
+       each .cpp internally, picking up these flags. Clang auto-adds the source file's directory for
+       quoted includes, so crunch/ fp16/ unitycrunch/ sub-headers resolve without an extra -I. -->
+  <PropertyGroup Condition="$(_WasmIsPublishing) == true">
+    <_DecoderDir>$(ProjectDir)..\AssetStudio\Texture2DDecoderNative</_DecoderDir>
+    <EmccFlags>$(EmccFlags) -I"$(_DecoderDir)" -I"$(_DecoderDir)\fp16" -I"$(_DecoderDir)\crunch" -I"$(_DecoderDir)\unitycrunch" -Wno-c++11-narrowing</EmccFlags>
+  </PropertyGroup>
   <ItemGroup Condition="$(_WasmIsPublishing) == true">
-    <WasmExtraFilesToDeploy  Include="$(ProjectDir)\..\Texture2DDecoderNative.WebAdapter\build\Texture2DDecoderNative.WebAdapter.wasm" TargetPath="$(WasmRuntimeAssetsLocation)\Texture2DDecoderNative.WebAdapter.wasm" />
-    <WasmExtraFilesToDeploy  Include="$(ProjectDir)\..\Texture2DDecoderNative.WebAdapter\build\Texture2DDecoderNative.WebAdapter.js" TargetPath="$(WasmRuntimeAssetsLocation)\Texture2DDecoderNative.WebAdapter.js" />
-    <WasmExtraFilesToDeploy  Include="$(ProjectDir)\..\Texture2DDecoderNative.ImportBridge\Texture2DDecoderNative.ImportBridge.js" TargetPath="$(WasmRuntimeAssetsLocation)\Texture2DDecoderNative.ImportBridge.js" />
+    <NativeFileReference Include="$(ProjectDir)..\AssetStudio\Texture2DDecoderNative\dllmain.cpp" />
+    <NativeFileReference Include="$(ProjectDir)..\AssetStudio\Texture2DDecoderNative\bcn.cpp" />
+    <NativeFileReference Include="$(ProjectDir)..\AssetStudio\Texture2DDecoderNative\astc.cpp" />
+    <NativeFileReference Include="$(ProjectDir)..\AssetStudio\Texture2DDecoderNative\etc.cpp" />
+    <NativeFileReference Include="$(ProjectDir)..\AssetStudio\Texture2DDecoderNative\pvrtc.cpp" />
+    <NativeFileReference Include="$(ProjectDir)..\AssetStudio\Texture2DDecoderNative\atc.cpp" />
+    <NativeFileReference Include="$(ProjectDir)..\AssetStudio\Texture2DDecoderNative\crunch.cpp" />
+    <NativeFileReference Include="$(ProjectDir)..\AssetStudio\Texture2DDecoderNative\unitycrunch.cpp" />
   </ItemGroup>
 
   <ItemGroup>

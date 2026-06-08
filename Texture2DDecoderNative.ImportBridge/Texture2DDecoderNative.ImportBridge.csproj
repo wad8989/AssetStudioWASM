@@ -4,20 +4,4 @@
     <AssemblyName>Texture2DDecoderWrapper</AssemblyName>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
-  
-  <Target Name="Build:Texture2DDecoderNativeWASM" BeforeTargets="Build">
-    <Exec Command="if not exist build mkdir build"
-          WorkingDirectory="$(ProjectDir)\..\Texture2DDecoderNative.WebAdapter" />
-    <Exec Command="emcmake cmake .."
-          WorkingDirectory="$(ProjectDir)\..\Texture2DDecoderNative.WebAdapter\build" />
-    <Exec Command="emmake make"
-          WorkingDirectory="$(ProjectDir)\..\Texture2DDecoderNative.WebAdapter\build" />
-  </Target>
-
-  <Target Name="Clean:Dist" AfterTargets="Clean">
-    <RemoveDir Directories="$(ProjectDir)\..\Texture2DDecoderNative.WebAdapter\build" />
-    <RemoveDir Directories="$(ProjectDir)\bin" />
-    <RemoveDir Directories="$(ProjectDir)\obj" />
-  </Target>
-
 </Project>

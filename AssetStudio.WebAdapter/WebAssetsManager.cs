@@ -120,8 +120,10 @@ namespace AssetStudio_WebAdaptor
             switch (obj)
             {
                 case Texture2D m_Texture2D:
-                    // data = m_Texture2D.image_data.GetData();
-                    data = m_Texture2D.ConvertToStream(ImageFormat.Png, true).GetBuffer();
+                    var texStream = m_Texture2D.ConvertToStream(ImageFormat.Png, true);
+                    if (texStream == null)
+                        throw new InvalidOperationException($"Texture decode failed for '{m_Texture2D.m_Name}', format={m_Texture2D.m_TextureFormat}");
+                    data = texStream.GetBuffer();
                     break;
                 case AudioClip m_AudioClip:
                     data = m_AudioClip.m_AudioData.GetData();
@@ -146,14 +148,7 @@ namespace AssetStudio_WebAdaptor
                     break;
                 case Font m_Font:
                     if (m_Font.m_FontData != null)
-                    {
-                        // var extension = ".ttf";
-                        // if (m_Font.m_FontData[0] == 79 && m_Font.m_FontData[1] == 84 && m_Font.m_FontData[2] == 84 && m_Font.m_FontData[3] == 79)
-                        // {
-                        //     extension = ".otf";
-                        // }
                         data = m_Font.m_FontData;
-                    }
                     break;
             }
 
@@ -183,17 +178,7 @@ namespace AssetStudio_WebAdaptor
         [ModuleInitializer]
         internal static void AntiTrim()
         {
-            // This code is now guaranteed to run when the assembly loads.
-            Logger.Debug("AntiTrim Initializer Running!");
             _ = AntiTrimJsonContext.Default;
-            _ = new Texture2D();
-            _ = new AnimationClip();
-            _ = new Material();
-            _ = new Texture2DArray();
-            _ = new GLTextureSettings();
-            _ = new QuaternionCurve();
         }
-        // This class body is intentionally empty!
-        // The source generator fills in the rest automatically
     }
 }
