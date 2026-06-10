@@ -34,6 +34,18 @@ namespace AssetStudio_WebAdaptor
             this.Reflection_ProcessAssets();
         }
 
+        public new void Clear()
+        {
+            base.Clear();
+
+            // base.Clear() omits assetsFileListHash (a private field cleared only in Load()).
+            // Since we bypass Load() and call LoadFile directly, we must clear it here so
+            // the same file can be reloaded after an unload.
+            var field = this.GetType().BaseType?.GetField("assetsFileListHash",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            (field?.GetValue(this) as System.Collections.Generic.HashSet<string>)?.Clear();
+        }
+
         private void Reflection_LoadFile(FileReader reader)
         {
             var method = typeof(AssetsManager).GetMethod("LoadFile",
