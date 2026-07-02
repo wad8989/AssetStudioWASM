@@ -124,7 +124,13 @@ namespace AssetStudio_WebAdaptor
         }
 
         [JSExport]
-        public static byte[] ExtractAssetResource(string assetJson)
+        public static void SetLogSilent(bool silent)
+        {
+            Logger.Default = silent ? new DummyLogger() : new WebLogger();
+        }
+
+        [JSExport]
+        public static byte[] ExtractAssetResource(string assetJson, string format)
         {
             var jsonElem = JsonDocument.Parse(assetJson).RootElement;
             var asset = new AssetInfo
@@ -139,7 +145,7 @@ namespace AssetStudio_WebAdaptor
             // Logger.Debug($"{asset.name}, {asset.type}, {asset.containerPath}, {asset.uniqueId}");
 
             var assetsManager = AssetStudio_WebAdaptor.WebAssetsManager.Instance;
-            return assetsManager.ExtractResource(asset.containerPath, asset.uniqueId, asset.type);
+            return assetsManager.ExtractResource(asset.containerPath, asset.uniqueId, asset.type, format);
         }
     }
 

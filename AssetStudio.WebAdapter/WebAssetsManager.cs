@@ -104,7 +104,22 @@ namespace AssetStudio_WebAdaptor
             }
         }
 
-        public byte[] ExtractResource(string containerPath, long key, ClassIDType type)
+        private static byte[] ExtractGeneric(AssetStudio.Object obj, string format, Func<byte[]> getImageBytes = null)
+        {
+            switch (format)
+            {
+                case "raw":
+                    return obj.GetRawData();
+                case "image" when getImageBytes != null:
+                    return getImageBytes.Invoke();
+                case "json":
+                default:
+                    var jsonDoc = obj.ToJsonDoc();
+                    return jsonDoc != null ? Encoding.UTF8.GetBytes(jsonDoc.RootElement.GetRawText()) : null;
+            }
+        }
+
+        public byte[] ExtractResource(string containerPath, long key, ClassIDType type, string format = null)
         {
             var assetsFile = AssetsFileList.FirstOrDefault(f => f.fullName == containerPath);
             if (assetsFile == null)
@@ -147,6 +162,11 @@ namespace AssetStudio_WebAdaptor
                     data = m_TextAsset.m_Script;
                     break;
                 case MonoBehaviour m_MonoBehaviour:
+                    if (format == "raw")
+                    {
+                        data = m_MonoBehaviour.GetRawData();
+                    }
+                    else
                     {
                         var jsonDoc = m_MonoBehaviour.ToJsonDoc();
                         if (jsonDoc == null)
@@ -154,13 +174,28 @@ namespace AssetStudio_WebAdaptor
                             var typeTree = m_MonoBehaviour.ConvertToTypeTree(new AssemblyLoader());
                             jsonDoc = m_MonoBehaviour.ToJsonDoc(typeTree);
                         }
-                        data = Encoding.UTF8.GetBytes(jsonDoc.RootElement.GetRawText());
+                        data = jsonDoc != null ? Encoding.UTF8.GetBytes(jsonDoc.RootElement.GetRawText()) : null;
                     }
-                    
                     break;
                 case Font m_Font:
                     if (m_Font.m_FontData != null)
                         data = m_Font.m_FontData;
+                    break;
+                case Sprite m_Sprite:
+                    data = ExtractGeneric(m_Sprite, format, getImageBytes: () =>
+                    {
+                        using var img = m_Sprite.GetImage();
+                        if (img == null)
+                            return null;
+                        using var stream = img.ConvertToStream(ImageFormat.Png);
+                        return stream.ToArray();
+                    });
+                    break;
+                case Animator m_Animator:
+                    data = ExtractGeneric(m_Animator, format);
+                    break;
+                case AnimationClip m_AnimationClip:
+                    data = ExtractGeneric(m_AnimationClip, format);
                     break;
             }
 
@@ -179,6 +214,8 @@ namespace AssetStudio_WebAdaptor
     [JsonSerializable(typeof(Material))]
     [JsonSerializable(typeof(QuaternionCurve))]
     [JsonSerializable(typeof(GLTextureSettings))]
+    [JsonSerializable(typeof(Sprite))]
+    [JsonSerializable(typeof(Animator))]
     // Add any other types that might be serialized
     [JsonSourceGenerationOptions(
         PropertyNameCaseInsensitive = true,

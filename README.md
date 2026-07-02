@@ -27,6 +27,10 @@ AssetStudioWASM fills that gap by providing the same core extraction capabilitie
   - VideoClip (original format)
   - TextAsset
   - Font
+  - MonoBehaviour (`json` default, or `raw`)
+  - Sprite (`json` default, or `raw` / `image` -> PNG)
+  - Animator (`json` default, or `raw`)
+  - AnimationClip (`json` default, or `raw`)
 - No file I/O required (apart from reading the original archive)  
 - Bridges to JavaScript / Web API  
 - Compatible with Unity versions supported by AssetStudio  
@@ -110,6 +114,11 @@ AssetStudioWASM.SetUnityVersionForStripped("2022.3.44f1");
 await AssetStudioWASM.LoadURL(url);
 // ...
 ```
+<ins>Remarks 2.2.</ins> Silencing console logs
+```js
+// Suppress all AssetStudioWASM console logging (pass false to restore it)
+AssetStudioWASM.SetLogSilent(true);
+```
 
 **Step 3. List and Extract assets**
 ```js
@@ -124,6 +133,14 @@ let media_url = AssetStudioWASM.ExtractAssetResource(wanted_asset);
 
 //REMARKS: Your responsibility to use `URL.revokeObjectURL` to release the memory
 URL.revokeObjectURL(media_url);
+```
+
+<ins>Remarks 3.1.</ins> Sprite / Animator / AnimationClip / MonoBehaviour accept an optional `opts` argument to pick the export format
+```js
+// format: "json" (default) | "raw" | "image" (Sprite only)
+let sprite_png_url = AssetStudioWASM.ExtractAssetResource(sprite_asset, { format: "image" });
+let sprite_raw_url = AssetStudioWASM.ExtractAssetResource(sprite_asset, { format: "raw" });
+let clip_json_url = AssetStudioWASM.ExtractAssetResource(animation_clip_asset); // defaults to json
 ```
 
 ## Thanks
