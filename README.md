@@ -114,6 +114,11 @@ AssetStudioWASM.SetUnityVersionForStripped("2022.3.44f1");
 await AssetStudioWASM.LoadURL(url);
 // ...
 ```
+<ins>Remarks 2.2.</ins> Silencing console logs
+```js
+// Suppress all AssetStudioWASM console logging (pass false to restore it)
+AssetStudioWASM.SetLogSilent(true);
+```
 
 **Step 3. List and Extract assets**
 ```js

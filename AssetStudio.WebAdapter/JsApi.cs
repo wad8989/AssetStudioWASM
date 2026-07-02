@@ -124,6 +124,12 @@ namespace AssetStudio_WebAdaptor
         }
 
         [JSExport]
+        public static void SetLogSilent(bool silent)
+        {
+            Logger.Default = silent ? new DummyLogger() : new WebLogger();
+        }
+
+        [JSExport]
         public static byte[] ExtractAssetResource(string assetJson, string format)
         {
             var jsonElem = JsonDocument.Parse(assetJson).RootElement;
