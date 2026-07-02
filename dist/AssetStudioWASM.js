@@ -28,9 +28,10 @@ AssetStudioWASM.LoadURL = function (filepath) {
 AssetStudioWASM.ListAllAssets = function() {
     return JSON.parse(this.__proto__.ListAllAssets());
 }
-AssetStudioWASM.ExtractAssetResource = function(asset) {
+AssetStudioWASM.ExtractAssetResource = function(asset, opts) {
+    const format = opts?.format ?? null;
     try {
-        let data = this.__proto__.ExtractAssetResource(JSON.stringify(asset));
+        let data = this.__proto__.ExtractAssetResource(JSON.stringify(asset), format);
         if (data) {
             let mimeType = "application/octet-stream";
             switch (asset.type) {
@@ -39,7 +40,10 @@ AssetStudioWASM.ExtractAssetResource = function(asset) {
                 case "VideoClip":   mimeType = "video/x-unknown"; break;
                 case "TextAsset":   mimeType = "text/plain"; break;
                 case "Font":        mimeType = "font/x-unknown"; break;
-                case "MonoBehaviour":   mimeType = "text/json"; break;
+                case "MonoBehaviour":   mimeType = format === "raw" ? "application/octet-stream" : "text/json"; break;
+                case "Sprite":      mimeType = format === "image" ? "image/png" : format === "raw" ? "application/octet-stream" : "text/json"; break;
+                case "Animator":
+                case "AnimationClip":   mimeType = format === "raw" ? "application/octet-stream" : "text/json"; break;
             }
             return URL.createObjectURL(new Blob([data], {type: mimeType}));
         }
