@@ -31,6 +31,8 @@ AssetStudioWASM fills that gap by providing the same core extraction capabilitie
   - Sprite (`json` default, or `raw` / `image` -> PNG)
   - Animator (`json` default, or `raw`)
   - AnimationClip (`json` default, or `raw`)
+  - RectTransform (`json` default, or `raw`)
+  - MonoScript (`json` default, or `raw`)
 - No file I/O required (apart from reading the original archive)  
 - Bridges to JavaScript / Web API  
 - Compatible with Unity versions supported by AssetStudio  
@@ -135,7 +137,7 @@ let media_url = AssetStudioWASM.ExtractAssetResource(wanted_asset);
 URL.revokeObjectURL(media_url);
 ```
 
-<ins>Remarks 3.1.</ins> Sprite / Animator / AnimationClip / MonoBehaviour accept an optional `opts` argument to pick the export format
+<ins>Remarks 3.1.</ins> Sprite / Animator / AnimationClip / RectTransform / MonoScript / MonoBehaviour accept an optional `opts` argument to pick the export format
 ```js
 // format: "json" (default) | "raw" | "image" (Sprite only)
 let sprite_png_url = AssetStudioWASM.ExtractAssetResource(sprite_asset, { format: "image" });

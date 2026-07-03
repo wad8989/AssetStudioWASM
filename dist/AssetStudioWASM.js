@@ -43,7 +43,9 @@ AssetStudioWASM.ExtractAssetResource = function(asset, opts) {
                 case "MonoBehaviour":   mimeType = format === "raw" ? "application/octet-stream" : "text/json"; break;
                 case "Sprite":      mimeType = format === "image" ? "image/png" : format === "raw" ? "application/octet-stream" : "text/json"; break;
                 case "Animator":
-                case "AnimationClip":   mimeType = format === "raw" ? "application/octet-stream" : "text/json"; break;
+                case "AnimationClip":
+                case "RectTransform":
+                case "MonoScript":      mimeType = format === "raw" ? "application/octet-stream" : "text/json"; break;
             }
             return URL.createObjectURL(new Blob([data], {type: mimeType}));
         }
