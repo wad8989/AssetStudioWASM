@@ -197,6 +197,12 @@ namespace AssetStudio_WebAdaptor
                 case AnimationClip m_AnimationClip:
                     data = ExtractGeneric(m_AnimationClip, format);
                     break;
+                case RectTransform m_RectTransform:
+                    data = ExtractGeneric(m_RectTransform, format);
+                    break;
+                case MonoScript m_MonoScript:
+                    data = ExtractGeneric(m_MonoScript, format);
+                    break;
             }
 
             if (data == null || data.Length == 0)
@@ -216,6 +222,8 @@ namespace AssetStudio_WebAdaptor
     [JsonSerializable(typeof(GLTextureSettings))]
     [JsonSerializable(typeof(Sprite))]
     [JsonSerializable(typeof(Animator))]
+    [JsonSerializable(typeof(RectTransform))]
+    [JsonSerializable(typeof(MonoScript))]
     // Add any other types that might be serialized
     [JsonSourceGenerationOptions(
         PropertyNameCaseInsensitive = true,
