@@ -137,12 +137,20 @@ let media_url = AssetStudioWASM.ExtractAssetResource(wanted_asset);
 URL.revokeObjectURL(media_url);
 ```
 
-<ins>Remarks 3.1.</ins> Sprite / Animator / AnimationClip / RectTransform / MonoScript / MonoBehaviour accept an optional `opts` argument to pick the export format
+<ins>Remarks 3.1.</ins> Sprite and structural objects accept an optional `opts` argument to pick the export format. Types without a media-specific exporter default to type-tree JSON, which makes GameObject, Transform, renderer, particle, controller, and other structural data usable at runtime. Unsupported format/type combinations throw `RangeError` instead of returning mislabeled bytes.
 ```js
 // format: "json" (default) | "raw" | "image" (Sprite only)
 let sprite_png_url = AssetStudioWASM.ExtractAssetResource(sprite_asset, { format: "image" });
 let sprite_raw_url = AssetStudioWASM.ExtractAssetResource(sprite_asset, { format: "raw" });
 let clip_json_url = AssetStudioWASM.ExtractAssetResource(animation_clip_asset); // defaults to json
+let transform_json_url = AssetStudioWASM.ExtractAssetResource(transform_asset, { format: "json" });
+```
+
+<ins>Remarks 3.2.</ins> Runtime code can avoid a temporary object URL and extract bytes or a typed Blob directly.
+```js
+const bytes = AssetStudioWASM.ExtractAssetBytes(asset, { format: "json" });
+const blob = AssetStudioWASM.ExtractAssetBlob(sprite_asset, { format: "image" });
+const mime = AssetStudioWASM.GetAssetMimeType(sprite_asset, { format: "image" });
 ```
 
 ## Thanks

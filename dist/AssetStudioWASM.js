@@ -28,27 +28,51 @@ AssetStudioWASM.LoadURL = function (filepath) {
 AssetStudioWASM.ListAllAssets = function() {
     return JSON.parse(this.__proto__.ListAllAssets());
 }
-AssetStudioWASM.ExtractAssetResource = function(asset, opts) {
+
+AssetStudioWASM.NormalizeAssetExportOptions = function(asset, opts) {
     const format = opts?.format ?? null;
+    const mediaOnly = new Set(["Texture2D", "AudioClip", "VideoClip", "TextAsset", "Font"]);
+    const allowed = asset.type === "Sprite"
+        ? [null, "json", "raw", "image"]
+        : mediaOnly.has(asset.type)
+            ? (asset.type === "Texture2D" ? [null, "image"] : [null])
+            : [null, "json", "raw"];
+    if (!allowed.includes(format))
+        throw new RangeError(`Export format '${format}' is not supported for ${asset.type}`);
+    return { format };
+}
+
+AssetStudioWASM.GetAssetMimeType = function(asset, opts) {
+    const { format } = this.NormalizeAssetExportOptions(asset, opts);
+    if (format === "raw") return "application/octet-stream";
+    if (format === "json") return "application/json";
+    if (format === "image") return "image/png";
+    switch (asset.type) {
+        case "Texture2D": return "image/png";
+        case "AudioClip": return "audio/ogg";
+        case "VideoClip": return "video/mp4";
+        case "TextAsset": return "text/plain";
+        case "Font": return "font/ttf";
+        default: return "application/json";
+    }
+}
+
+// Direct bytes avoid the temporary object URL + fetch round trip for runtimes
+// that want to cache or parse an extracted object.
+AssetStudioWASM.ExtractAssetBytes = function(asset, opts) {
+    const { format } = this.NormalizeAssetExportOptions(asset, opts);
+    return this.__proto__.ExtractAssetResource(JSON.stringify(asset), format) || null;
+}
+
+AssetStudioWASM.ExtractAssetBlob = function(asset, opts) {
+    const data = this.ExtractAssetBytes(asset, opts);
+    return data ? new Blob([data], {type: this.GetAssetMimeType(asset, opts)}) : null;
+}
+
+AssetStudioWASM.ExtractAssetResource = function(asset, opts) {
     try {
-        let data = this.__proto__.ExtractAssetResource(JSON.stringify(asset), format);
-        if (data) {
-            let mimeType = "application/octet-stream";
-            switch (asset.type) {
-                case "Texture2D":   mimeType = "image/x-unknown"; break;
-                case "AudioClip":   mimeType = "audio/x-unknown"; break;
-                case "VideoClip":   mimeType = "video/x-unknown"; break;
-                case "TextAsset":   mimeType = "text/plain"; break;
-                case "Font":        mimeType = "font/x-unknown"; break;
-                case "MonoBehaviour":   mimeType = format === "raw" ? "application/octet-stream" : "text/json"; break;
-                case "Sprite":      mimeType = format === "image" ? "image/png" : format === "raw" ? "application/octet-stream" : "text/json"; break;
-                case "Animator":
-                case "AnimationClip":
-                case "RectTransform":
-                case "MonoScript":      mimeType = format === "raw" ? "application/octet-stream" : "text/json"; break;
-            }
-            return URL.createObjectURL(new Blob([data], {type: mimeType}));
-        }
+        const blob = this.ExtractAssetBlob(asset, opts);
+        return blob ? URL.createObjectURL(blob) : null;
     } catch (e) {
         console.error(e);
         throw e;

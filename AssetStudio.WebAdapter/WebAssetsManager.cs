@@ -203,6 +203,13 @@ namespace AssetStudio_WebAdaptor
                 case MonoScript m_MonoScript:
                     data = ExtractGeneric(m_MonoScript, format);
                     break;
+                default:
+                    // Media-specific exporters are optional. AssetStudio has already
+                    // parsed this object and retains its serialized type tree, so make
+                    // structural assets available to browser runtimes as JSON (or raw
+                    // bytes when explicitly requested).
+                    data = ExtractGeneric(obj, format);
+                    break;
             }
 
             if (data == null || data.Length == 0)
